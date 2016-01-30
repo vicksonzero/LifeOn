@@ -34,15 +34,12 @@ window.onload = function() {
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
 		//Load Tiled map
-		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
 	function onCreate() {
-		//Load the layers of tiled map as well as setting everything in the Collidable layer collidable with the player
-		var map = game.add.tilemap('gameMap');
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
 
