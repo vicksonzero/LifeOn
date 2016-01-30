@@ -5,7 +5,7 @@
 	
 window.onload = function() {
 
-	var game = new Phaser.Game(400,400,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
 	var MAP_HEIGHT = 160;
 	var MAP_WIDTH = 320;
