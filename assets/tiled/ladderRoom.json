@@ -1,35 +1,35 @@
 { "height":10,
  "layers":[
         {
-         "data":[0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1],
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1],
          "height":10,
          "name":"Collidable",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":5,
+         "width":4,
          "x":0,
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
          "name":"Background",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":5,
+         "width":4,
          "x":0,
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "data":[0, 2, 3, 0, 0, 6, 7, 0, 0, 2, 3, 0, 0, 6, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
          "name":"Ladder",
          "opacity":1,
          "type":"tilelayer",
          "visible":true,
-         "width":5,
+         "width":4,
          "x":0,
          "y":0
         }],
@@ -45,8 +45,8 @@
         {
          "firstgid":1,
          "image":"spriteSheet.png",
-         "imageheight":16,
-         "imagewidth":32,
+         "imageheight":32,
+         "imagewidth":64,
          "margin":0,
          "name":"spriteSheet",
          "properties":
@@ -54,11 +54,11 @@
 
             },
          "spacing":0,
-         "tilecount":2,
+         "tilecount":8,
          "tileheight":16,
          "tilewidth":16
         }],
  "tilewidth":16,
  "version":1,
- "width":5
+ "width":4
 }

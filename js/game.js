@@ -16,14 +16,14 @@ window.onload = function() {
 		game.load.image("player","./img/player.png");
 		game.load.image("ground","./img/ground.png");
 		/*global Phaser*/
+		//Load Tiled map
 		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 	}
 
 	function onCreate() {
-		//http://phaser.io/examples/v2/loader/load-tilemap-json
+		//Load the layers of tiled map as well as setting everything in the Collidable layer collidable with the player
 		var map = game.add.tilemap('gameMap');
-		map.addTilesetImage('level', 'level');
 		map.setCollisionBetween(1, 300, true, 'Collidable');
 		map.addTilesetImage('spriteSheet', 'spriteSheet');
 		map.createLayer('Background');
