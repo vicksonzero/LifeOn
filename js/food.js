@@ -8,21 +8,23 @@ var Food = (function () {
         
 		game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		
-		this.sprite.body.immovable = true;
+		this.sprite.body.immovable = false;
 		this.sprite.body.allowGravity = true;
 		group.add(this.sprite);
+        
+        this.type = "food";
+        this.sprite.go = this;
 		
         Food.foods.push(this);
+        
+        // TODO effects
     }
     
     Food.foods = [];
     
     
-    
     var p = Food.prototype;
-    function onContactPlayer(argument) {
-        // body...
-    }
+    
     
     
     return Food;
