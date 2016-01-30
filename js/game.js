@@ -64,7 +64,7 @@ window.onload = function() {
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = addPlayer(30,200);
-		addFood(200,150);
+		addFood(200,150,3000);
 		addFood(170,250);
 		addEnemy(170,150);
 		addEnemy(40,150);
@@ -154,8 +154,11 @@ window.onload = function() {
 		}
 	}
 	
-	function addFood(posX, posY) {
-		new Food(posX, posY, game, player, foodGroup);
+	function addFood(posX, posY, lifetime) {
+		var food = new Food(posX, posY, game, player, foodGroup);
+		if (lifetime){
+			food.setDuration(lifetime);
+		}
 	}
 
 	function addEnemy(posX, posY) {
