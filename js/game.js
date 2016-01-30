@@ -58,7 +58,7 @@ window.onload = function() {
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		player = addPlayer(0,200);
+		player = addPlayer(30,200);
 		addFood(170,50);
 		addFood(40,50);
 		addFood(200,150);
