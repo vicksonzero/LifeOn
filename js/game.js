@@ -35,6 +35,8 @@ window.onload = function() {
 	var keyMap = {};
 	var ladderGroup;
 	var foodGroup;
+	var enemyGroup;
+	var characterGroup;
 	var roomStartGroup;
 	var bgGroup;
 
@@ -55,7 +57,8 @@ window.onload = function() {
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
-		
+		game.load.image('enemy', 'assets/images/food.png');
+		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
@@ -65,6 +68,8 @@ window.onload = function() {
 		ladderGroup = game.add.group();
 		foodGroup = game.add.group();
 		roomStartGroup = game.add.group();
+		enemyGroup = game.add.group();
+		characterGroup = game.add.group();
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -76,8 +81,6 @@ window.onload = function() {
 		// addFood(40,50);
 		// addFood(200,150);
 		// addFood(170,250);
-	
-		
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -86,10 +89,24 @@ window.onload = function() {
    		keyMap.right.onDown.add(goRight, this);
 		keyMap.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
    		keyMap.space.onDown.add(tryJump, this);
-		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-   		keyMap.up.onDown.add(tryJump, this);
-   		
-    	// game.world.setBounds(-2000, -2000, 4000, 4000);
+
+
+   		keyMap.up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+		keyMap.up.onDown.add(onInteraction, this);
+
+	}
+
+	function onInteraction(){
+		if (player.touchingCharacter) {
+			player.touchingCharacter.onInteraction(
+				player,
+				function(){
+					game.input.keyboard.enabled =true;
+				}
+			);
+			game.input.keyboard.enabled=false
+		}
+
 	}
 
 	// roomSet: array of roomDef{bg, props[{name, type, x, y}]}
@@ -109,8 +126,6 @@ window.onload = function() {
 			}
 			
 		}
-		
-		currentIndex.x++;
 	}
 
 	function addRoom(x,y,roomX, roomY, ladder){
@@ -143,24 +158,42 @@ window.onload = function() {
 
 	
 	
-	function addFood(posX, posY) {
+	function addFood(posX, posY, lifetime) {
 		/*global Food*/
-		new Food(posX, posY, game, player, foodGroup);
+		var food = new Food(posX, posY, game, player, foodGroup);
+		if (lifetime){
+			food.setDuration(lifetime);
+		}
+	}
+
+	function addEnemy(posX, posY) {
+		new Enemy(posX, posY, game, player, enemyGroup);
+	}
+
+	function addCharacter(posX, posY, time){
+		var character = new Character(posX, posY, game, player, characterGroup);
+		character.setInteractionCallBack(function(){console.log("YES")})
+		character.interactionTime = time || 1000;
 	}
 
 	function onUpdate() {
 		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
 		playerOnLadder = false;
+		player.touchingCharacter=null;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
 		game.physics.arcade.collide(platformGroup, foodGroup);
+		game.physics.arcade.collide(platformGroup, enemyGroup);
+		game.physics.arcade.collide(platformGroup, characterGroup);
+        game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
-		
+        game.physics.arcade.overlap(player, characterGroup, onCollideCharacter, null, this);
+
 		// keep player from falling out of world
 		if(player.y>game.height){
 			player.y = 0;
@@ -170,39 +203,39 @@ window.onload = function() {
 		if(player.x < 12 || player.x < game.camera.x){
 			player.x= Math.max(12,game.camera.x);
 		}
-		// if(player.x>5000){
-		// 	player.x=468;
-		// 	playerSpeed*=-1;
-		// }
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
-		if (cursors.up.isDown)
-	    {
-	    	moveOnLadder("up");
-	    }
-	    else if (cursors.down.isDown)
-	    {
-	    	moveOnLadder("down");
-	    }
+		if (game.input.keyboard.enabled){
+			if (cursors.up.isDown)
+		    {
+		    	moveOnLadder("up");
+		    }
+		    else if (cursors.down.isDown)
+		    {
+		    	moveOnLadder("down");
+		    }
 
-	    if (cursors.left.isDown)
-	    {
-	    	moveOnLadder("left");
-	    	movePlayer();
-	    	goLeft();
-	    }
-	    else if (cursors.right.isDown)
-	    {
-	    	moveOnLadder("right");
-	    	movePlayer();
-	    	goRight();
-	    }
-	    else
-	    {
-	    	playerSpeed = 0;
-			player.animations.play('stay', 10, true);
-	    }
+		    if (cursors.left.isDown)
+		    {
+		    	moveOnLadder("left");
+		    	movePlayer();
+		    	goLeft();
+		    }
+		    else if (cursors.right.isDown)
+		    {
+		    	moveOnLadder("right");
+		    	movePlayer();
+		    	goRight();
+		    }
+		    else
+		    {
+		    	playerSpeed = 0;
+				player.animations.play('stay', 10, true);
+		    }
+		} else {
+			playerSpeed=0;
+		}
 	    updateWorldBound();
 	    //updateMap();
 	}
@@ -228,6 +261,16 @@ window.onload = function() {
 		hit.kill();
 	}
 	
+	function onCollideEnemy(player, enemy){
+		if (enemy.body.touching.up && player.body.touching.down) {
+			enemy.kill();
+			console.log ("killed enemy" + enemy.go.type)
+		}
+	}
+
+	function onCollideCharacter(player, character){
+		player.touchingCharacter = character.go;
+	}
 
 	function changePlayerScore(key, val) {
 		playerScore[key] = val;
