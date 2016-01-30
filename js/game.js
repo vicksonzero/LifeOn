@@ -2,15 +2,16 @@
 
 /*global Ladder*/
 /*global roonGenRules*/
+
+var MAP_HEIGHT = 160;
+var MAP_WIDTH = 480;
+var LADDER_WIDTH = 36;
+var CAMERA_SIZE = 400;
 	
 window.onload = function() {
 
 	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
-	var MAP_HEIGHT = 160;
-	var MAP_WIDTH = 480;
-	var LADDER_WIDTH = 36;
-	var CAMERA_SIZE = 400;
 	// player object
 	var player;
 	// movement speed for player
@@ -23,7 +24,7 @@ window.onload = function() {
 	};
 	var currentIndex = {
 		x:0,
-		y:1
+		y:2
 	};
 	var platformGroup;
 	var oldCameraX = 0;
@@ -37,8 +38,16 @@ window.onload = function() {
 	var enemyGroup;
 	var characterGroup;
 	var roomStartGroup;
+	var bgGroup;
 
 	function onPreload() {
+		// bg
+		game.load.image("schoolbackground","assets/bg/schoolbackground.png");
+		
+		
+		
+		
+		// sprites
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("startBox","assets/images/startBox.png");
@@ -54,6 +63,7 @@ window.onload = function() {
 	}
 
 	function onCreate() {
+		bgGroup = game.add.group();
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
 		foodGroup = game.add.group();
@@ -63,18 +73,14 @@ window.onload = function() {
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		player = addPlayer(30,200);
-		addFood(200,150,3000);
-		addFood(170,250);
-		addEnemy(170,150);
-		addEnemy(40,150);
-		addCharacter(200,150);
-		addCharacter(70,150);
-
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, false)
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, false);
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y + 1)), currentIndex.x, currentIndex.y + 1, false);
-		currentIndex.x++;
+		player = addPlayer(30,260);
+		
+		updateMap();
+		
+		// addFood(170,50);
+		// addFood(40,50);
+		// addFood(200,150);
+		// addFood(170,250);
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -84,10 +90,10 @@ window.onload = function() {
 		keyMap.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
    		keyMap.space.onDown.add(tryJump, this);
 
-   		var up_key = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
-		up_key.onDown.add(onInteraction, this);
 
-    	game.world.setBounds(-2000, -2000, 4000, 4000);
+   		keyMap.up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+		keyMap.up.onDown.add(onInteraction, this);
+
 	}
 
 	function onInteraction(){
@@ -103,11 +109,23 @@ window.onload = function() {
 
 	}
 
-	function addNewSetsOfRoom(){
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, true)
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, true);
-		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y + 1)), currentIndex.x, currentIndex.y + 1, false);
-		currentIndex.x++;
+	// roomSet: array of roomDef{bg, props[{name, type, x, y}]}
+	function addNewSetsOfRoom(roomSet){
+		if(roomSet.length<=0){
+			throw new Error("roomSet.length cannot be 0");
+		}
+		if(roomSet.length==1){
+			// create one room if only one
+			/*global Room*/
+			/*global roomDef*/
+			Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
+		}else{
+			// 0 = up, 1 = keep level, 2 (optional)= down
+			for(var i=0; i < roomSet.length; i++){
+				Room.create({x:currentIndex.x, y:currentIndex.y - 1 + i}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[i].name], (i+1 < roomSet.length));
+			}
+			
+		}
 	}
 
 	function addRoom(x,y,roomX, roomY, ladder){
@@ -115,7 +133,7 @@ window.onload = function() {
 			addLadder(x,y+150,3);
 		}
 		addPlatform(x+MAP_WIDTH/2,y+MAP_HEIGHT,'ground');
-        startBox = game.add.sprite(x + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, y, "startBox", 1);
+        var startBox = game.add.sprite(x + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, y, "startBox", 1);
 		game.physics.enable(startBox, Phaser.Physics.ARCADE);
 		startBox.body.immovable = true;
 		startBox.body.allowGravity = false;
@@ -138,23 +156,10 @@ window.onload = function() {
 		return player;
 	}
 
-	function addPlatform(posX,posY,asset){
-		var platform = game.add.sprite(posX,posY,asset);
-		platform.anchor.setTo(0.5);
-		game.physics.enable(platform, Phaser.Physics.ARCADE);
-		platform.body.allowGravity = false;
-		platform.body.immovable = true;
-		platformGroup.add(platform);
-	}
 	
-	function addLadder(posX, posY, height){
-		const LADDER_HEIGHT = 32;
-		for(var i=0; i < height; i++){
-			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
-		}
-	}
 	
 	function addFood(posX, posY, lifetime) {
+		/*global Food*/
 		var food = new Food(posX, posY, game, player, foodGroup);
 		if (lifetime){
 			food.setDuration(lifetime);
@@ -232,7 +237,7 @@ window.onload = function() {
 			playerSpeed=0;
 		}
 	    updateWorldBound();
-	    updateMap();
+	    //updateMap();
 	}
 	
 	function onContactPlayer(player, whateverCheckDoc) {
@@ -252,7 +257,7 @@ window.onload = function() {
 	
 	function onCollideStartBox(player, hit) {
 		currentIndex.y = hit.roomY;
-		addNewSetsOfRoom();
+		updateMap();
 		hit.kill();
 	}
 	
@@ -269,7 +274,8 @@ window.onload = function() {
 
 	function changePlayerScore(key, val) {
 		playerScore[key] = val;
-		console.log(key, playerScore[key]);
+		
+		console.log("changePlayerScore", key, playerScore[key]);
 		playerOnScoreChanged();
 	}
 	
@@ -345,30 +351,60 @@ window.onload = function() {
 	}
 	
 	function updateMap() {
+		var roomSet = generateNextRoomSet();
+		console.log(roomSet);
+		addNewSetsOfRoom(roomSet);
+		
 	}
 	
-	function generateRoomCandidates() {
-		var status = {};
+	function generateNextRoomSet() {
+		var result = [];
+		var choices = game.rnd.integerInRange(2,3);
+
+		var state = getStateObject();
+
 		var candidates = {};
-		/*global roonGenRules*/
-		roonGenRules.forEach(function(element) {
-			if(element.condition(status)){
-				
-				// mix room candidates
-				updatecandidates(candidates, element.addsRoom);
+		/*global directorRules*/
+		for(var i=0; i<directorRules.length; i++){
+			var rule = directorRules[i];
+			if(rule.condition(state) == true){
+				// force result
+
+				console.log(rule.mustHaveRooms);
+				result = result.concat(rule.mustHaveRooms.map(function(elem){
+					/*global roomDef*/
+					return roomDef[elem.roomName];
+				}));
+				// fill if some spaces left
+				choices = Math.min(choices,rule.maxRooms);
+
+
+
+				return result;
 			}
-			
-		},this);
-		
-		function updatecandidates(candidatesDictionary, roomList) {
-			roomList.forEach(function(element) {
-				if(candidatesDictionary.hasOwnProperty(element.roomName)){
-					candidatesDictionary[element.roomName] = element.weight;
-				}else{
-					candidatesDictionary[element.roomName] = element.weight;
-				}
-			},this);
 		}
+
+		for(var j=0; j < choices; j++){
+			if(j<result.length && result[j].roomName !== "empty") continue;
+			result[j] = randomRoom();
+		}
+
+
+		return result;
+
+		
+		
+	}
+
+	function getStateObject(){
+		return {
+			currentIndex: currentIndex,
+			playerScore: playerScore,
+		};
+	}
+
+	function randomRoom(){
+		return roomDefArray[game.rnd.integerInRange(0,roomDefArray.length-1)];
 	}
 
 	function render() {
