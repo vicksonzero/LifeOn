@@ -218,7 +218,7 @@ window.onload = function() {
 	}
 	
 	function canJump(){
-		return player.body.onFloor() && true;
+		return player.body.touching.down && true;
 	}
 	
 	
