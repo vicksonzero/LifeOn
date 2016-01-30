@@ -11,7 +11,6 @@ window.onload = function() {
 	var MAP_WIDTH = 320;
 	// player object
 	var player;
-	var playerHair;
 	// movement speed for player
 	var playerSpeed = 150;
 	var playerJumpSpeed = 150;
@@ -53,17 +52,13 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = addPlayer(120,50);
 
-		playerHair = game.add.sprite(0, 0, "player");
-		playerHair.anchor.setTo(0.5);
-		playerHair.animations.add('fly', [0,1], 60, true);
-		playerHair.animations.add('nofly', [0], 60, true);
-
 		
 		addLadder(192,0,3);
 		addLadder(192,132,3);
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*2,'ground');
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*3,'ground');
+		
 		addFood(170,50);
 		addFood(40,50);
 		addFood(200,150);
@@ -86,8 +81,8 @@ window.onload = function() {
 		
 		var player = game.add.sprite(posX, posY, "player");
 		player.anchor.setTo(0.5);
-		player.animations.add('walk', [2,3], 60, true);
-		player.animations.add('stay', [2], 60, true);
+		player.animations.add('walk', [0,1], 60, true);
+		player.animations.add('stay', [1], 60, true);
 		
 		game.physics.enable(player, Phaser.Physics.ARCADE);
     	player.body.setSize(32, 64, 0, 0);
@@ -120,8 +115,6 @@ window.onload = function() {
 		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
 		playerOnLadder = false;
-		playerHair.x = player.x;
-		playerHair.y = player.y;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
@@ -172,7 +165,6 @@ window.onload = function() {
 	    {
 	    	playerSpeed = 0;
 			player.animations.play('stay', 10, true);
-		playerHair.animations.play('nofly', 10, true);
 	    }
 	    updateWorldBound();
 	    updateMap();
@@ -186,12 +178,24 @@ window.onload = function() {
 	function onCollideFood(player, food) {
 		switch(food.go.type){
 			case "food":
-				playerScore.intel++;
-				console.log(playerScore.intel);
+				changePlayerScore("intel", playerScore.intel + 1);
 				break;
 		}
 		food.kill();
 		
+	}
+	
+	function changePlayerScore(key, val) {
+		playerScore[key] = val;
+		
+		console.log(key, playerScore[key]);
+		playerOnScoreChanged();
+	}
+	
+	function playerOnScoreChanged() {
+		if(playerScore.intel>=2){
+			player.loadTexture('food');
+		}
 	}
 
 	function movePlayer(){
@@ -233,13 +237,11 @@ window.onload = function() {
 	function goLeft(){
 		playerSpeed = Math.abs(150)*-1;
 		player.animations.play('walk', 10, true);
-		playerHair.animations.play('fly', 10, true);
 	}
 
 	function goRight(){
 		playerSpeed = Math.abs(150);
 		player.animations.play('walk', 10, true);
-		playerHair.animations.play('fly', 10, true);
 	}
 
 	function jump(){
@@ -266,9 +268,22 @@ window.onload = function() {
 	}
 
 	function render() {
-
 	    game.debug.cameraInfo(game.camera, 32, 32);
 
 	}
 
 };
+
+
+
+/*
+[
+{canGo:bool, roomID:int},
+{canGo:bool, roomID:int},
+{canGo:bool, roomID:int}
+
+]
+
+
+
+*/
