@@ -92,12 +92,13 @@ window.onload = function() {
 
 	function onInteraction(){
 		if (player.touchingCharacter) {
-			player.touchingCharacter.onInteraction();
-			player.touchingCharacter.setFlashing();
+			player.touchingCharacter.onInteraction(
+				player,
+				function(){
+					game.input.keyboard.enabled =true;
+				}
+			);
 			game.input.keyboard.enabled=false
-			setTimeout(function(){
-				game.input.keyboard.enabled =true;
-			}, player.touchingCharacter.interactionTime);
 		}
 
 	}
@@ -197,32 +198,36 @@ window.onload = function() {
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
-		if (cursors.up.isDown)
-	    {
-	    	moveOnLadder("up");
-	    }
-	    else if (cursors.down.isDown)
-	    {
-	    	moveOnLadder("down");
-	    }
+		if (game.input.keyboard.enabled){
+			if (cursors.up.isDown)
+		    {
+		    	moveOnLadder("up");
+		    }
+		    else if (cursors.down.isDown)
+		    {
+		    	moveOnLadder("down");
+		    }
 
-	    if (cursors.left.isDown)
-	    {
-	    	moveOnLadder("left");
-	    	movePlayer();
-	    	goLeft();
-	    }
-	    else if (cursors.right.isDown)
-	    {
-	    	moveOnLadder("right");
-	    	movePlayer();
-	    	goRight();
-	    }
-	    else
-	    {
-	    	playerSpeed = 0;
-			player.animations.play('stay', 10, true);
-	    }
+		    if (cursors.left.isDown)
+		    {
+		    	moveOnLadder("left");
+		    	movePlayer();
+		    	goLeft();
+		    }
+		    else if (cursors.right.isDown)
+		    {
+		    	moveOnLadder("right");
+		    	movePlayer();
+		    	goRight();
+		    }
+		    else
+		    {
+		    	playerSpeed = 0;
+				player.animations.play('stay', 10, true);
+		    }
+		} else {
+			playerSpeed=0;
+		}
 	    updateWorldBound();
 	    updateMap();
 	}

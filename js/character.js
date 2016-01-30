@@ -25,9 +25,15 @@ var Character = (function () {
         this.interactionCallBack = fn;
     }
 
-    p.onInteraction= function (player){
+    p.onInteraction= function (player, onFinishCallBack){
         if(this.interactionCallBack){
-            this.interactionCallBack(player)
+            this.setFlashing();
+            this.interactionCallBack()
+            setTimeout(function(){
+                if (onFinishCallBack) {
+                    onFinishCallBack();
+                }
+            }, this.interactionTime);
         };
         return (this.interactionCallBack==undefined);
     }
