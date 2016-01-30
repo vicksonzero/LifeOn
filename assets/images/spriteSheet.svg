@@ -10,8 +10,8 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="64"
-   height="32"
+   width="32"
+   height="16"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
@@ -41,7 +41,8 @@
        y1="0"
        x2="32"
        y2="32"
-       gradientUnits="userSpaceOnUse" />
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.49999985,0,0,0.49999985,0,1036.3622)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -50,9 +51,9 @@
      borderopacity="1.0"
      inkscape:pageopacity="0.0"
      inkscape:pageshadow="2"
-     inkscape:zoom="8"
-     inkscape:cx="25.34941"
-     inkscape:cy="22.111694"
+     inkscape:zoom="5.6568542"
+     inkscape:cx="36.346666"
+     inkscape:cy="-4.7527274"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -69,8 +70,8 @@
        visible="true"
        enabled="true"
        snapvisiblegridlinesonly="true"
-       spacingx="32px"
-       spacingy="32px" />
+       spacingx="16px"
+       spacingy="16px" />
   </sodipodi:namedview>
   <metadata
      id="metadata7">
@@ -88,26 +89,24 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1020.3622)">
+     transform="translate(0,-1036.3622)">
     <rect
-       style="fill:url(#linearGradient3782);fill-opacity:1;fill-rule:nonzero;stroke:none;stroke-width:1;stroke-linecap:round;stroke-linejoin:round;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none"
+       style="fill:url(#linearGradient3782);fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3006"
-       width="32"
-       height="32"
+       width="15.999995"
+       height="15.999995"
        x="0"
-       y="0"
-       transform="translate(0,1020.3622)" />
+       y="1036.3622" />
     <rect
-       style="fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none;opacity:0.5"
+       style="opacity:0.5;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3787"
-       width="32"
+       width="16"
        height="5"
        x="0"
-       y="0"
-       transform="translate(0,1020.3622)" />
+       y="1036.3622" />
     <g
        id="g3834"
-       transform="matrix(0.909179,0,0,0.97838062,4.4140164,22.405438)">
+       transform="matrix(0.45458936,0,0,0.48919016,2.2070075,537.38398)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
          y="-60.757954"

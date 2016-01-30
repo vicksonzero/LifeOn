@@ -1,7 +1,7 @@
 { "height":10,
  "layers":[
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1],
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
          "height":10,
          "name":"Collidable",
          "opacity":1,
@@ -12,7 +12,7 @@
          "y":0
         }, 
         {
-         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+         "data":[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 0, 1, 1],
          "height":10,
          "name":"Background",
          "opacity":1,
@@ -29,13 +29,13 @@
 
     },
  "renderorder":"right-down",
- "tileheight":32,
+ "tileheight":16,
  "tilesets":[
         {
          "firstgid":1,
          "image":"spriteSheet.png",
-         "imageheight":32,
-         "imagewidth":64,
+         "imageheight":16,
+         "imagewidth":32,
          "margin":0,
          "name":"spriteSheet",
          "properties":
@@ -44,10 +44,10 @@
             },
          "spacing":0,
          "tilecount":2,
-         "tileheight":32,
-         "tilewidth":32
+         "tileheight":16,
+         "tilewidth":16
         }],
- "tilewidth":32,
+ "tilewidth":16,
  "version":1,
  "width":5
 }
