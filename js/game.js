@@ -11,6 +11,9 @@ window.onload = function() {
 	var player;
 	// movement speed for player
 	var playerSpeed = 150;
+	var playerJumpSpeed = 150;
+	var playerClimbSpeed = 100;
+	var playerOnLadder = false;
 	
 	var platformGroup;
 	var oldCameraX = 0;
@@ -50,10 +53,10 @@ window.onload = function() {
 		player.anchor.setTo(0.5);
 		
 		game.physics.enable(player, Phaser.Physics.ARCADE);
-		game.physics.arcade.gravity.y = 150;
+		game.physics.arcade.gravity.y = 200;
 		
 		
-		addLadder(0,0,3);
+		addLadder(192,0,3);
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -78,15 +81,16 @@ window.onload = function() {
 	}
 	
 	function addLadder(posX, posY, height){
-		console.log("hi");
 		const LADDER_HEIGHT = 32;
 		for(var i=0; i < height; i++){
-			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player);
+			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
 		}
 	}
 
 	function onUpdate() {
+		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
+		playerOnLadder = false;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
@@ -112,11 +116,11 @@ window.onload = function() {
 		game.camera.y = player.y-400/2;
 		if (cursors.up.isDown)
 	    {
-	    	//go up stair
+	    	moveOnLadder("up");
 	    }
 	    else if (cursors.down.isDown)
 	    {
-	    	//go down stair
+	    	moveOnLadder("down");
 	    }
 
 	    if (cursors.left.isDown)
@@ -139,15 +143,28 @@ window.onload = function() {
 	
 	function onContactPlayer(player, whateverCheckDoc) {
 		floatPlayer();
-		console.log("hi");
+		playerOnLadder = true;
 	}
 
 	function movePlayer(){
 		player.body.velocity.x = playerSpeed;
 	}
 	
+	function moveOnLadder(direction) {
+		if(!playerOnLadder) return;
+		switch(direction){
+			case "up":
+				player.body.velocity.y = -1*playerClimbSpeed;
+				break;
+			case "down":
+				player.body.velocity.y = playerClimbSpeed;
+				break;
+		}
+	}
+	
 	function floatPlayer() {
-		player.bdy.velocity.y = 0;
+		player.body.allowGravity = false;
+		player.body.velocity.y = 0;
 	}
 
 	function changeDir(){
@@ -163,18 +180,19 @@ window.onload = function() {
 	}
 
 	function jump(){
-		player.body.velocity.y=-150;
+		player.body.velocity.y= -1*playerJumpSpeed;
 	}
 	
 	function tryJump() {
 		if(canJump()){
-			player.body.velocity.y=-150;
+			jump();
 		}
 	}
 	
 	function canJump(){
-		return true;
+		return player.body.onFloor() && true;
 	}
+	
 	
 	function updateWorldBound() {
 		

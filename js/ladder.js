@@ -3,12 +3,14 @@
 /* global player*/
 
 var Ladder = (function () {
-    function Ladder(startX, startY, game, player){
+    function Ladder(startX, startY, game, player, group){
         this.sprite = game.add.sprite(startX, startY, "ladderSheet", 1);
         
 		game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		
-		this.sprite.body.immovable = false;
+		this.sprite.body.immovable = true;
+		this.sprite.body.allowGravity = false;
+		group.add(this.sprite);
 		
         Ladder.ladders.push(this);
     }
