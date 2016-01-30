@@ -49,7 +49,7 @@ window.onload = function() {
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
 		game.load.image('enemy', 'assets/images/food.png');
-		game.load.image('character','assets/images/childhood_merge1spritesheet.png')
+		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
@@ -93,7 +93,13 @@ window.onload = function() {
 	function onInteraction(){
 		if (player.touchingCharacter) {
 			player.touchingCharacter.onInteraction();
+			player.touchingCharacter.setFlashing();
+			game.input.keyboard.enabled=false
+			setTimeout(function(){
+				game.input.keyboard.enabled =true;
+			}, player.touchingCharacter.interactionTime);
 		}
+
 	}
 
 	function addNewSetsOfRoom(){
@@ -155,9 +161,10 @@ window.onload = function() {
 		new Enemy(posX, posY, game, player, enemyGroup);
 	}
 
-	function addCharacter(posX, posY){
+	function addCharacter(posX, posY, time){
 		var character = new Character(posX, posY, game, player, characterGroup);
 		character.setInteractionCallBack(function(){console.log("YES")})
+		character.interactionTime = time || 1000;
 	}
 
 	function onUpdate() {

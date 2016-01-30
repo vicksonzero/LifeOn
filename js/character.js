@@ -15,6 +15,7 @@ var Character = (function () {
 		group.add(this.sprite);
         
         this.sprite.go = this;
+        this.interactionTime = 1000;
         // TODO effects
     }
     
@@ -31,6 +32,20 @@ var Character = (function () {
         return (this.interactionCallBack==undefined);
     }
 
+    p.setFlashing = function () {
+        setTimeout(function() {
+            this.sprite.tint = 0xaaaaaa;
+            setTimeout(function() {
+                this.sprite.tint = 0xffffff;
+                    setTimeout(function() {
+                        this.sprite.tint = 0xaaaaaa;
+                        setTimeout(function() {
+                            this.sprite.tint = 0xffffff;
+                    }.bind(this), 333);
+                }.bind(this), 333);
+            }.bind(this), 333);
+        }.bind(this), 333);
+    }
 
     return Character;
 })();
