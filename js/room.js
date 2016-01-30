@@ -18,7 +18,7 @@ var Room = (function () {
 		// floor
 		this.floor = Room.addPlatform(posX+MAP_WIDTH/2,posY+MAP_HEIGHT,'ground', game, platformGroup);
 		
-		if(needLadder) Room.addLadder(posX,posY+150,3, game, player, ladderGroup);
+		if(needLadder) Room.addLadder(posX,posY+150,4, game, player, ladderGroup);
 
 
         this.startBox = game.add.sprite(posX + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, posY, "startBox", 1);

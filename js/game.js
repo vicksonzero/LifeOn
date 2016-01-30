@@ -39,6 +39,9 @@ window.onload = function() {
 	var characterGroup;
 	var roomStartGroup;
 	var bgGroup;
+	var tutorialIsRuning = true;
+	var tutorialEnemy,tutorialFood;
+	var currentTutorialState = 0;
 
 	function onPreload() {
 		// bg
@@ -91,7 +94,7 @@ window.onload = function() {
    		keyMap.space.onDown.add(tryJump, this);
 
 
-   		keyMap.up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+   		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
 		keyMap.up.onDown.add(onInteraction, this);
 
 	}
@@ -126,20 +129,7 @@ window.onload = function() {
 			}
 			
 		}
-	}
-
-	function addRoom(x,y,roomX, roomY, ladder){
-		if (ladder) {
-			addLadder(x,y+150,3);
-		}
-		addPlatform(x+MAP_WIDTH/2,y+MAP_HEIGHT,'ground');
-        var startBox = game.add.sprite(x + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, y, "startBox", 1);
-		game.physics.enable(startBox, Phaser.Physics.ARCADE);
-		startBox.body.immovable = true;
-		startBox.body.allowGravity = false;
-		startBox.roomX=roomX;
-		startBox.roomY=roomY;
-		roomStartGroup.add(startBox);
+		currentIndex.x++;
 	}
 	
 	function addPlayer(posX, posY) {
@@ -167,7 +157,8 @@ window.onload = function() {
 	}
 
 	function addEnemy(posX, posY) {
-		new Enemy(posX, posY, game, player, enemyGroup);
+		var enemy = new Enemy(posX, posY, game, player, enemyGroup);
+		return enemy.sprite;
 	}
 
 	function addCharacter(posX, posY, time){
@@ -194,10 +185,11 @@ window.onload = function() {
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
         game.physics.arcade.overlap(player, characterGroup, onCollideCharacter, null, this);
 
-		// keep player from falling out of world
-		if(player.y>game.height){
-			player.y = 0;
-		}
+        if (tutorialIsRuning) {
+        	if (runTutorial(currentTutorialState)){
+        		currentTutorialState++;
+        	}
+        }
 
 		// keep player from going before camera
 		if(player.x < 12 || player.x < game.camera.x){
@@ -412,8 +404,47 @@ window.onload = function() {
 
 	}
 
-};
+	function runTutorial(state){
+		game.input.keyboard.enabled=false;
+		switch (state) {
+			case 0 :
+				player.body.velocity.x = 150;
+			 	return( player.position.x > MAP_WIDTH + LADDER_WIDTH/2);
+			case 1 :
+				moveOnLadder("up");
+			 	return( player.position.y < MAP_HEIGHT * 0.7);
+			case 2 :
+				moveOnLadder("right");
+			 	return( player.position.y < MAP_HEIGHT * 0.75);
+			case 3 :
+				addCharacter(player.position.x, player.position.y-50);
+				player.loadTexture('partner');
+				tutorialEnemy = addEnemy(player.position.x+200, player.position.y-50);
+				return true;
+			case 4 :
+				player.body.velocity.x = 150;
+			 	return( player.position.x >=  tutorialEnemy.position.x-20);
+			case 5 :
+				player.body.velocity.y = -150;
+			 	return( player.position.y < MAP_HEIGHT*0.75);
+			case 6 :
+				player.body.velocity.x = 150;
+			 	return( player.position.x >= tutorialEnemy.position.x);
+			case 7 :
+				player.body.velocity.x = 0;
+				addFood(player.position.x+150, player.position.y-50,4000);
+			 	return true;
+			case 8 :
+			 	return( player.position.y > 119);
+			case 9 :
+				player.body.velocity.x = 150;
+				return (player.position.x > MAP_WIDTH*2.5)
+		}
+		tutorialIsRuning = false;
+		game.input.keyboard.enabled=true;
+	}
 
+};
 
 
 /*
