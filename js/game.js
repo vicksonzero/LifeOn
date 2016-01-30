@@ -34,6 +34,7 @@ window.onload = function() {
 	var keyMap = {};
 	var ladderGroup;
 	var foodGroup;
+	var enemyGroup;
 	var roomStartGroup;
 
 	function onPreload() {
@@ -46,6 +47,7 @@ window.onload = function() {
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
+		game.load.image('enemy', 'assets/images/food.png');
 		
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
@@ -55,14 +57,15 @@ window.onload = function() {
 		ladderGroup = game.add.group();
 		foodGroup = game.add.group();
 		roomStartGroup = game.add.group();
+		enemyGroup = game.add.group();
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = addPlayer(30,200);
-		addFood(170,50);
-		addFood(40,50);
 		addFood(200,150);
 		addFood(170,250);
+		addEnemy(170,150);
+		addEnemy(40,150);
 
 		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, false)
 		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, false);
@@ -137,6 +140,10 @@ window.onload = function() {
 		new Food(posX, posY, game, player, foodGroup);
 	}
 
+	function addEnemy(posX, posY) {
+		new Enemy(posX, posY, game, player, enemyGroup);
+	}
+
 	function onUpdate() {
 		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
@@ -146,6 +153,8 @@ window.onload = function() {
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
 		game.physics.arcade.collide(platformGroup, foodGroup);
+		game.physics.arcade.collide(platformGroup, enemyGroup);
+        game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
@@ -159,10 +168,6 @@ window.onload = function() {
 		if(player.x < 12 || player.x < game.camera.x){
 			player.x= Math.max(12,game.camera.x);
 		}
-		// if(player.x>5000){
-		// 	player.x=468;
-		// 	playerSpeed*=-1;
-		// }
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
@@ -212,12 +217,17 @@ window.onload = function() {
 	}
 	
 	function onCollideStartBox(player, hit) {
-		console.log("hit")
 		currentIndex.y = hit.roomY;
 		addNewSetsOfRoom();
 		hit.kill();
 	}
 	
+	function onCollideEnemy(player, enemy){
+		if (enemy.body.touching.up && player.body.touching.down) {
+			enemy.kill();
+			console.log ("killed enemy" + enemy.go.type)
+		}
+	}
 
 	function changePlayerScore(key, val) {
 		playerScore[key] = val;
