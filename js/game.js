@@ -56,7 +56,7 @@ window.onload = function() {
 		playerHair = game.add.sprite(0, 0, "player");
 		playerHair.anchor.setTo(0.5);
 		playerHair.animations.add('fly', [0,1], 60, true);
-		playerHair.animations.play('fly', 10, true);
+		playerHair.animations.add('nofly', [0], 60, true);
 
 		game.physics.enable(player, Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 200;
@@ -148,6 +148,7 @@ window.onload = function() {
 	    {
 	    	playerSpeed = 0;
 			player.animations.play('stay', 10, true);
+		playerHair.animations.play('nofly', 10, true);
 	    }
 	    updateWorldBound();
 	    updateMap();
@@ -197,11 +198,13 @@ window.onload = function() {
 	function goLeft(){
 		playerSpeed = Math.abs(150)*-1;
 		player.animations.play('walk', 10, true);
+		playerHair.animations.play('fly', 10, true);
 	}
 
 	function goRight(){
 		playerSpeed = Math.abs(150);
 		player.animations.play('walk', 10, true);
+		playerHair.animations.play('fly', 10, true);
 	}
 
 	function jump(){
