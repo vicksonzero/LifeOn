@@ -1,6 +1,10 @@
 // room 480 x 160
 
 var roomDef = {
+    "empty":{
+        bg:"",
+        props:[]
+    },
     "spawnStreet1":{
         bg:"schoolbackground",
         props:[]
@@ -22,9 +26,12 @@ var roomDef = {
         ]
     }
 };
-//TODO room type
+
+var roomDefArray = [];
+
 for(var key in roomDef){
     if(roomDef.hasOwnProperty(key)){
         roomDef[key].name = key;
+        roomDefArray.push(roomDef[key]);
     }
 }

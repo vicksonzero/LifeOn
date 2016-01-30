@@ -15,7 +15,7 @@ var Props = (function () {
         var result = null;
         switch(propsDef.type){
             case "food":
-                result = Food.create(propsDef, worldX, worldY);
+                //result = Food.create(propsDef, worldX, worldY);
                 break;
             case "enemy":
                 //result = Enemy.create(propsDef, worldX, worldY);

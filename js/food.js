@@ -15,13 +15,11 @@ var Food = (function () {
         this.type = "food";
         this.sprite.go = this;
 		
-        Food.foods.push(this);
         
         // TODO effects
     }
     
-    Food.foods = [];
-    
+    Food.create
     
     var p = Food.prototype;
     

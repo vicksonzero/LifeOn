@@ -24,7 +24,7 @@ window.onload = function() {
 	};
 	var currentIndex = {
 		x:0,
-		y:1
+		y:2
 	};
 	var platformGroup;
 	var oldCameraX = 0;
@@ -68,7 +68,7 @@ window.onload = function() {
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		player = addPlayer(30,200);
+		player = addPlayer(30,260);
 		
 		updateMap();
 		
@@ -101,13 +101,11 @@ window.onload = function() {
 			// create one room if only one
 			/*global Room*/
 			/*global roomDef*/
-			console.log(roomSet[0].roomName);
-			Room.create(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, roomDef[roomSet[0]]);
+			Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
 		}else{
 			// 0 = up, 1 = keep level, 2 (optional)= down
 			for(var i=0; i < roomSet.length; i++){
-				console.log(roomSet[i]);
-				Room.create({x:currentIndex.x, y:currentIndex.y - 1 + i}, game, player, bgGroup, platformGroup, roomStartGroup, roomDef[roomSet[i]]);
+				Room.create({x:currentIndex.x, y:currentIndex.y - 1 + i}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[i].name], (i+1 < roomSet.length));
 			}
 			
 		}
@@ -144,12 +142,6 @@ window.onload = function() {
 	}
 
 	
-	function addLadder(posX, posY, height){
-		const LADDER_HEIGHT = 32;
-		for(var i=0; i < height; i++){
-			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
-		}
-	}
 	
 	function addFood(posX, posY) {
 		/*global Food*/
@@ -316,52 +308,60 @@ window.onload = function() {
 	}
 	
 	function updateMap() {
-		var roomSet = [];
-		var roomCandidates = generateRoomCandidates();
-		var choices = game.rnd.integerInRange(2,3);
-		
-		for(var i=0; i < choices; i++){
-			var candidateID = game.rnd.integerInRange(0,roomCandidates.length-1);
-			roomSet.push(roomCandidates[candidateID]);
-		}
+		var roomSet = generateNextRoomSet();
+		console.log(roomSet);
 		addNewSetsOfRoom(roomSet);
 		
 	}
 	
-	function generateRoomCandidates() {
-		var state = {};
-		state.currentIndex = currentIndex;
-		state.playerScore = playerScore;
+	function generateNextRoomSet() {
+		var result = [];
+		var choices = game.rnd.integerInRange(2,3);
+
+		var state = getStateObject();
+
 		var candidates = {};
 		/*global directorRules*/
-		directorRules.forEach(function(element) {
-			if(element.condition(state)){
-				
-				// mix room candidates
-				updatecandidates(candidates, element.mustHaveRooms);
-			}
-			
-		},this);
-		var result = [];
-		for (var key in candidates) {
-			if (candidates.hasOwnProperty(key)) {
-				result.push(key);
-				delete candidates[key];
+		for(var i=0; i<directorRules.length; i++){
+			var rule = directorRules[i];
+			if(rule.condition(state) == true){
+				// force result
+
+				console.log(rule.mustHaveRooms);
+				result = result.concat(rule.mustHaveRooms.map(function(elem){
+					/*global roomDef*/
+					return roomDef[elem.roomName];
+				}));
+				// fill if some spaces left
+				choices = Math.min(choices,rule.maxRooms);
+
+
+
+				return result;
 			}
 		}
-		
+
+		for(var j=0; j < choices; j++){
+			if(j<result.length && result[j].roomName !== "empty") continue;
+			result[j] = randomRoom();
+		}
+
+
 		return result;
+
 		
-		function updatecandidates(candidatesDictionary, roomList) {
-			roomList.forEach(function(element) {
-				console.log(element);
-				if(candidatesDictionary.hasOwnProperty(element.roomName)){
-					candidatesDictionary[element.roomName] = element.weight;
-				}else{
-					candidatesDictionary[element.roomName] = element.weight;
-				}
-			},this);
-		}
+		
+	}
+
+	function getStateObject(){
+		return {
+			currentIndex: currentIndex,
+			playerScore: playerScore,
+		};
+	}
+
+	function randomRoom(){
+		return roomDefArray[game.rnd.integerInRange(0,roomDefArray.length-1)];
 	}
 
 	function render() {

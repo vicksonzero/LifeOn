@@ -6,8 +6,10 @@
 /*global LADDER_WIDTH*/
 
 var Room = (function () {
-    function Room(posX, posY, game, player, bgGroup, platformGroup, roomStartGroup, bgName){
+    function Room(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, bgName, needLadder){
         
+        var posX = Room.indexToCoordX(currentIndex);
+        var posY = Room.indexToCoordY(currentIndex);
         // posX, posY in world coord
         this.x = posX;
         this.y = posY;
@@ -16,28 +18,35 @@ var Room = (function () {
 		// floor
 		this.floor = Room.addPlatform(posX+MAP_WIDTH/2,posY+MAP_HEIGHT,'ground', game, platformGroup);
 		
+		if(needLadder) Room.addLadder(posX,posY+150,3, game, player, ladderGroup);
+
+
         this.startBox = game.add.sprite(posX + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, posY, "startBox", 1);
 		game.physics.enable(this.startBox, Phaser.Physics.ARCADE);
 		this.startBox.body.immovable = true;
 		this.startBox.body.allowGravity = false;
 		this.startBox.parentRoom = this;
+		this.startBox.roomY = currentIndex.y;
 		
 		roomStartGroup.add(this.startBox);
 		
 		
-        this.type = "Room";
+        this.roomName = "Room";
         this.sprite.go = this;
         
         // TODO effects
     }
     
-    Room.create = function create(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, roomDef) {
+    Room.create = function create(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef, needLadder) {
         console.log(roomDef);
+        if(roomDef.name == "empty"){
+
+        }
         //roomdef = {bg props name}
         var roomX = Room.indexToCoordX(currentIndex);
         var roomY = Room.indexToCoordY(currentIndex);
         
-        var result = new Room(roomX, roomY, game, player, bgGroup, platformGroup, roomStartGroup, roomDef.bg);
+        var result = new Room(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef.bg, needLadder);
         
         var worldX
         var worldY;
@@ -47,7 +56,7 @@ var Room = (function () {
             worldY = roomY + roomDef.props[i].y;
             result.addProp(Props.create(roomDef.props[i], worldX, worldY));
         }
-        result.type = roomDef.type;
+        result.roomName = roomDef.roomName;
         return result;
     };
     
@@ -70,6 +79,12 @@ var Room = (function () {
 		platformGroup.add(platform);
 		
 		return platform;
+	}
+	Room.addLadder = function addLadder(posX, posY, height, game, player, ladderGroup){
+		const LADDER_HEIGHT = 32;
+		for(var i=0; i < height; i++){
+			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
+		}
 	}
     
     

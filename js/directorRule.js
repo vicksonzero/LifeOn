@@ -5,7 +5,7 @@ var directorRules = [
         name:"tutorial",
         condition: function(state){
             console.log("directorRules");
-            return true;
+            return state.currentIndex.x==0;
         },
         maxRooms:1,
         mustHaveRooms:[
