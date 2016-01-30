@@ -53,7 +53,7 @@ window.onload = function() {
 		player = game.add.sprite(240, 0, "player");
 		player.anchor.setTo(0.5);
 		player.animations.add('walk', [2,3], 60, true);
-		player.animations.play('walk', 10, true);
+		player.animations.add('stay', [2], 60, true);
 
 		playerHair = game.add.sprite(0, 0, "player");
 		playerHair.anchor.setTo(0.5);
@@ -145,6 +145,7 @@ window.onload = function() {
 	    else
 	    {
 	    	playerSpeed = 0;
+			player.animations.play('stay', 10, true);
 	    }
 	    updateWorldBound();
 	    updateMap();
@@ -182,10 +183,12 @@ window.onload = function() {
 
 	function goLeft(){
 		playerSpeed = Math.abs(150)*-1;
+		player.animations.play('walk', 10, true);
 	}
 
 	function goRight(){
 		playerSpeed = Math.abs(150);
+		player.animations.play('walk', 10, true);
 	}
 
 	function jump(){
