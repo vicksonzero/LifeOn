@@ -1,50 +1,80 @@
+
+
+/*global Ladder*/
+
+	
 window.onload = function() {
 
 	var game = new Phaser.Game(400,400,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
-	var playerSpeed = 150;
+	// player object
 	var player;
+	var playerHair;
+	// movement speed for player
+	var playerSpeed = 150;
+	var playerJumpSpeed = 150;
+	var playerClimbSpeed = 100;
+	var playerOnLadder = false;
+	
 	var platformGroup;
 	var oldCameraX = 0;
+	// input object
 	var cursors = null;
 	var layer;
+	// holder for key binding objects
 	var keyMap = {};
+	var ladderGroup;
 
 	function onPreload() {
-		game.load.image("platform180","./img/platform180.png");
-		game.load.image("platform120","./img/platform120.png");
-		game.load.image("player","./img/player.png");
-		game.load.image("ground","./img/ground.png");
+		game.load.image("platform180","assets/images/platform180.png");
+		game.load.image("platform120","assets/images/platform120.png");
+		game.load.spritesheet("player","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
+		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
-		game.load.tilemap("gameMap", "./assets/tiled/level.json", null, Phaser.Tilemap.TILED_JSON);
-		game.load.image('level', 'assets/tiled/level.png');
-		game.load.image('coin', 'assets/tiled/coin.png');
+		//Load Tiled map
+		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
+		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
+		
+		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
 	function onCreate() {
-		//http://phaser.io/examples/v2/loader/load-tilemap-json
+		//Load the layers of tiled map as well as setting everything in the Collidable layer collidable with the player
 		var map = game.add.tilemap('gameMap');
-		map.addTilesetImage('level', 'level');
-		map.setCollisionBetween(1, 300, true, 'Foreground');
-		map.addTilesetImage('coin', 'coin');
+		platformGroup = game.add.group();
+		ladderGroup = game.add.group();
+		
+		map.setCollisionBetween(1, 300, true, 'Collidable');
+		map.addTilesetImage('spriteSheet', 'spriteSheet');
 		map.createLayer('Background');
-		layer = map.createLayer('Foreground');
-
+		layer = map.createLayer('Collidable');
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = game.add.sprite(240, 0, "player");
 		player.anchor.setTo(0.5);
+		player.animations.add('walk', [2,3], 60, true);
+		player.animations.play('walk', 10, true);
+
+		playerHair = game.add.sprite(0, 0, "player");
+		playerHair.anchor.setTo(0.5);
+		playerHair.animations.add('fly', [0,1], 60, true);
+		playerHair.animations.play('fly', 10, true);
+
 		game.physics.enable(player, Phaser.Physics.ARCADE);
-		game.physics.arcade.gravity.y = 150;
-		platformGroup = game.add.group();
+		game.physics.arcade.gravity.y = 200;
+		
+		addLadder(192,0,3);
+
+		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
    		keyMap.left.onDown.add(goLeft, this);
 		keyMap.right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
    		keyMap.right.onDown.add(goRight, this);
 		keyMap.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-   		keyMap.space.onDown.add(jump, this);
+   		keyMap.space.onDown.add(tryJump, this);
 		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-   		keyMap.up.onDown.add(jump, this);
+   		keyMap.up.onDown.add(tryJump, this);
+   		
     	game.world.setBounds(0, 0, 2000, 2000);
 	}
 
@@ -56,14 +86,27 @@ window.onload = function() {
 		platform.body.immovable = true;
 		platformGroup.add(platform);
 	}
+	
+	function addLadder(posX, posY, height){
+		const LADDER_HEIGHT = 32;
+		for(var i=0; i < height; i++){
+			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
+		}
+	}
 
 	function onUpdate() {
+		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
+		playerOnLadder = false;
+		playerHair.x = player.x;
+		playerHair.y = player.y;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
-
+        game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
+		
+		
 		// keep player from falling out of world
 		if(player.y>320){
 			player.y = 0;
@@ -82,11 +125,11 @@ window.onload = function() {
 		game.camera.y = player.y-400/2;
 		if (cursors.up.isDown)
 	    {
-	    	//go up stair
+	    	moveOnLadder("up");
 	    }
 	    else if (cursors.down.isDown)
 	    {
-	    	//go down stair
+	    	moveOnLadder("down");
 	    }
 
 	    if (cursors.left.isDown)
@@ -106,9 +149,31 @@ window.onload = function() {
 	    updateWorldBound();
 	    updateMap();
 	}
+	
+	function onContactPlayer(player, whateverCheckDoc) {
+		floatPlayer();
+		playerOnLadder = true;
+	}
 
 	function movePlayer(){
 		player.body.velocity.x = playerSpeed;
+	}
+	
+	function moveOnLadder(direction) {
+		if(!playerOnLadder) return;
+		switch(direction){
+			case "up":
+				player.body.velocity.y = -1*playerClimbSpeed;
+				break;
+			case "down":
+				player.body.velocity.y = playerClimbSpeed;
+				break;
+		}
+	}
+	
+	function floatPlayer() {
+		player.body.allowGravity = false;
+		player.body.velocity.y = 0;
 	}
 
 	function changeDir(){
@@ -124,8 +189,19 @@ window.onload = function() {
 	}
 
 	function jump(){
-		player.body.velocity.y=-150;
+		player.body.velocity.y= -1*playerJumpSpeed;
 	}
+	
+	function tryJump() {
+		if(canJump()){
+			jump();
+		}
+	}
+	
+	function canJump(){
+		return player.body.onFloor() && true;
+	}
+	
 	
 	function updateWorldBound() {
 		
