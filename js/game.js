@@ -17,6 +17,9 @@ window.onload = function() {
 	var playerJumpSpeed = 150;
 	var playerClimbSpeed = 10;
 	var playerOnLadder = false;
+	var playerScore = {
+		intel:0
+	};
 	
 	var platformGroup;
 	var oldCameraX = 0;
@@ -26,6 +29,7 @@ window.onload = function() {
 	// holder for key binding objects
 	var keyMap = {};
 	var ladderGroup;
+	var foodGroup;
 
 	function onPreload() {
 		game.load.image("platform180","assets/images/platform180.png");
@@ -35,6 +39,7 @@ window.onload = function() {
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
+		game.load.image('food', 'assets/images/food.png');
 		
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
@@ -42,27 +47,27 @@ window.onload = function() {
 	function onCreate() {
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
+		foodGroup = game.add.group();
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		player = game.add.sprite(240, 0, "player");
-		player.anchor.setTo(0.5);
-		player.animations.add('walk', [2,3], 60, true);
-		player.animations.add('stay', [2], 60, true);
+		player = addPlayer(120,50);
 
 		playerHair = game.add.sprite(0, 0, "player");
 		playerHair.anchor.setTo(0.5);
 		playerHair.animations.add('fly', [0,1], 60, true);
 		playerHair.animations.add('nofly', [0], 60, true);
 
-		game.physics.enable(player, Phaser.Physics.ARCADE);
-		game.physics.arcade.gravity.y = 200;
 		
 		addLadder(192,0,3);
 		addLadder(192,132,3);
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*2,'ground');
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*3,'ground');
+		addFood(170,50);
+		addFood(40,50);
+		addFood(200,150);
+		addFood(170,250);
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -76,9 +81,23 @@ window.onload = function() {
    		
     	game.world.setBounds(0, 0, 2000, 2000);
 	}
+	
+	function addPlayer(posX, posY) {
+		
+		var player = game.add.sprite(posX, posY, "player");
+		player.anchor.setTo(0.5);
+		player.animations.add('walk', [2,3], 60, true);
+		player.animations.add('stay', [2], 60, true);
+		
+		game.physics.enable(player, Phaser.Physics.ARCADE);
+    	player.body.setSize(32, 64, 0, 0);
+		game.physics.arcade.gravity.y = 200;
+		
+		return player;
+	}
 
 	function addPlatform(posX,posY,asset){
-		var platform = game.add.sprite(posX,posY,asset)
+		var platform = game.add.sprite(posX,posY,asset);
 		platform.anchor.setTo(0.5);
 		game.physics.enable(platform, Phaser.Physics.ARCADE);
 		platform.body.allowGravity = false;
@@ -92,6 +111,10 @@ window.onload = function() {
 			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player, ladderGroup);
 		}
 	}
+	
+	function addFood(posX, posY) {
+		new Food(posX, posY, game, player, foodGroup);
+	}
 
 	function onUpdate() {
 		player.body.allowGravity = true;
@@ -103,7 +126,9 @@ window.onload = function() {
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
+		game.physics.arcade.collide(platformGroup, foodGroup);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
+        game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
 		
 		
 		// keep player from falling out of world
@@ -156,6 +181,17 @@ window.onload = function() {
 	function onContactPlayer(player, whateverCheckDoc) {
 		floatPlayer();
 		playerOnLadder = true;
+	}
+	
+	function onCollideFood(player, food) {
+		switch(food.go.type){
+			case "food":
+				playerScore.intel++;
+				console.log(playerScore.intel);
+				break;
+		}
+		food.kill();
+		
 	}
 
 	function movePlayer(){
@@ -217,7 +253,7 @@ window.onload = function() {
 	}
 	
 	function canJump(){
-		return player.body.onFloor() && true;
+		return player.body.touching.down && true;
 	}
 	
 	
