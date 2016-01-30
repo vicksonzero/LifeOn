@@ -1,20 +1,30 @@
+
+
+/*global Ladder*/
+
+	
 window.onload = function() {
 
 	var game = new Phaser.Game(400,400,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
-	var playerSpeed = 150;
+	// player object
 	var player;
+	// movement speed for player
+	var playerSpeed = 150;
+	
 	var platformGroup;
 	var oldCameraX = 0;
+	// input object
 	var cursors = null;
 	var layer;
+	// holder for key binding objects
 	var keyMap = {};
 
 	function onPreload() {
-		game.load.image("platform180","./img/platform180.png");
-		game.load.image("platform120","./img/platform120.png");
-		game.load.image("player","./img/player.png");
-		game.load.image("ground","./img/ground.png");
+		game.load.image("platform180","assets/images/platform180.png");
+		game.load.image("platform120","assets/images/platform120.png");
+		game.load.image("player","assets/images/player.png");
+		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
 		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
@@ -36,14 +46,17 @@ window.onload = function() {
 		game.physics.enable(player, Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 150;
 		platformGroup = game.add.group();
+		
+		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
    		keyMap.left.onDown.add(goLeft, this);
 		keyMap.right = game.input.keyboard.addKey(Phaser.Keyboard.RIGHT);
    		keyMap.right.onDown.add(goRight, this);
 		keyMap.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
-   		keyMap.space.onDown.add(jump, this);
+   		keyMap.space.onDown.add(tryJump, this);
 		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-   		keyMap.up.onDown.add(jump, this);
+   		keyMap.up.onDown.add(tryJump, this);
+   		
     	game.world.setBounds(0, 0, 2000, 2000);
 	}
 
@@ -54,6 +67,13 @@ window.onload = function() {
 		platform.body.allowGravity = false;
 		platform.body.immovable = true;
 		platformGroup.add(platform);
+	}
+	
+	function addLadder(posX, posY, height){
+		const LADDER_HEIGHT = 32;
+		for(var i=0; i < height; i++){
+			Ladder.create(game, posX, posY + i * LADDER_HEIGHT);
+		}
 	}
 
 	function onUpdate() {
@@ -124,6 +144,16 @@ window.onload = function() {
 
 	function jump(){
 		player.body.velocity.y=-150;
+	}
+	
+	function tryJump() {
+		if(canJump()){
+			player.body.velocity.y=-150;
+		}
+	}
+	
+	function canJump(){
+		return true;
 	}
 	
 	function updateWorldBound() {
