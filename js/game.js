@@ -8,7 +8,9 @@ window.onload = function() {
 	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
 	var MAP_HEIGHT = 160;
-	var MAP_WIDTH = 320;
+	var MAP_WIDTH = 480;
+	var LADDER_WIDTH = 36;
+	var CAMERA_SIZE = 400;
 	// player object
 	var player;
 	// movement speed for player
@@ -19,7 +21,10 @@ window.onload = function() {
 	var playerScore = {
 		intel:0
 	};
-	
+	var currentIndex = {
+		x:0,
+		y:1
+	};
 	var platformGroup;
 	var oldCameraX = 0;
 	// input object
@@ -29,10 +34,12 @@ window.onload = function() {
 	var keyMap = {};
 	var ladderGroup;
 	var foodGroup;
+	var roomStartGroup;
 
 	function onPreload() {
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
+		game.load.image("startBox","assets/images/startBox.png");
 		game.load.spritesheet("player","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
@@ -47,22 +54,20 @@ window.onload = function() {
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
 		foodGroup = game.add.group();
+		roomStartGroup = game.add.group();
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
-		player = addPlayer(120,50);
-
-		
-		addLadder(192,0,3);
-		addLadder(192,132,3);
-		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
-		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*2,'ground');
-		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*3,'ground');
-		
+		player = addPlayer(30,200);
 		addFood(170,50);
 		addFood(40,50);
 		addFood(200,150);
 		addFood(170,250);
+
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, false)
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, false);
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y + 1)), currentIndex.x, currentIndex.y + 1, false);
+		currentIndex.x++;
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -74,7 +79,28 @@ window.onload = function() {
 		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
    		keyMap.up.onDown.add(tryJump, this);
    		
-    	game.world.setBounds(0, 0, 2000, 2000);
+    	game.world.setBounds(-2000, -2000, 4000, 4000);
+	}
+
+	function addNewSetsOfRoom(){
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, true)
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, true);
+		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y + 1)), currentIndex.x, currentIndex.y + 1, false);
+		currentIndex.x++;
+	}
+
+	function addRoom(x,y,roomX, roomY, ladder){
+		if (ladder) {
+			addLadder(x,y+150,3);
+		}
+		addPlatform(x+MAP_WIDTH/2,y+MAP_HEIGHT,'ground');
+        startBox = game.add.sprite(x + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, y, "startBox", 1);
+		game.physics.enable(startBox, Phaser.Physics.ARCADE);
+		startBox.body.immovable = true;
+		startBox.body.allowGravity = false;
+		startBox.roomX=roomX;
+		startBox.roomY=roomY;
+		roomStartGroup.add(startBox);
 	}
 	
 	function addPlayer(posX, posY) {
@@ -122,7 +148,7 @@ window.onload = function() {
 		game.physics.arcade.collide(platformGroup, foodGroup);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
-		
+        game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
 		
 		// keep player from falling out of world
 		if(player.y>game.height){
@@ -137,9 +163,9 @@ window.onload = function() {
 		// 	player.x=468;
 		// 	playerSpeed*=-1;
 		// }
-		game.camera.x = Math.max(player.x-400/2,oldCameraX);
+		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
-		game.camera.y = player.y-400/2;
+		game.camera.y = player.y-CAMERA_SIZE/2;
 		if (cursors.up.isDown)
 	    {
 	    	moveOnLadder("up");
@@ -185,6 +211,14 @@ window.onload = function() {
 		
 	}
 	
+	function onCollideStartBox(player, hit) {
+		console.log("hit")
+		currentIndex.y = hit.roomY;
+		addNewSetsOfRoom();
+		hit.kill();
+	}
+	
+
 	function changePlayerScore(key, val) {
 		playerScore[key] = val;
 		
@@ -260,7 +294,7 @@ window.onload = function() {
 	
 	
 	function updateWorldBound() {
-		
+    	game.world.setBounds(player.x - 2000, player.y - 2000, 4000, 4000);
 	}
 	
 	function updateMap() {
