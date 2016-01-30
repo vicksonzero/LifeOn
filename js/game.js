@@ -1,7 +1,7 @@
 
 
 /*global Ladder*/
-
+/*global roonGenRules*/
 	
 window.onload = function() {
 
@@ -264,7 +264,30 @@ window.onload = function() {
 	}
 	
 	function updateMap() {
+	}
+	
+	function generateRoomCandidates() {
+		var status = {};
+		var candidates = {};
+		/*global roonGenRules*/
+		roonGenRules.forEach(function(element) {
+			if(element.condition(status)){
+				
+				// mix room candidates
+				updatecandidates(candidates, element.addsRoom);
+			}
+			
+		},this);
 		
+		function updatecandidates(candidatesDictionary, roomList) {
+			roomList.forEach(function(element) {
+				if(candidatesDictionary.hasOwnProperty(element.roomName)){
+					candidatesDictionary[element.roomName] = element.weight;
+				}else{
+					candidatesDictionary[element.roomName] = element.weight;
+				}
+			},this);
+		}
 	}
 
 	function render() {
