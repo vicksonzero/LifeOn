@@ -1,3 +1,8 @@
+Workflow:
+1. create branch to make changes
+2. make pull request in github
+3. you can approve yourself (until gamejam has finished)
+
 * Move img/ into assets/
 - Find out how to move camera (done?)
  - Find out how to move player (arrow + jump) (done?)
