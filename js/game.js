@@ -29,6 +29,8 @@ window.onload = function() {
 		//Load Tiled map
 		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
+		
+		game.load.atlas('ladderSheet', 'assets/tiled/ladderSheet.png', 'assets/tiled/ladderSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
 	function onCreate() {
@@ -38,6 +40,8 @@ window.onload = function() {
 		map.addTilesetImage('spriteSheet', 'spriteSheet');
 		map.createLayer('Background');
 		layer = map.createLayer('Collidable');
+		
+		addLadder(0,0,3);
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -72,7 +76,7 @@ window.onload = function() {
 	function addLadder(posX, posY, height){
 		const LADDER_HEIGHT = 32;
 		for(var i=0; i < height; i++){
-			Ladder.create(game, posX, posY + i * LADDER_HEIGHT);
+			new Ladder(game, "ladder", posX, posY + i * LADDER_HEIGHT);
 		}
 	}
 
