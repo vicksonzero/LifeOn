@@ -9,6 +9,7 @@ window.onload = function() {
 
 	// player object
 	var player;
+	var playerHair;
 	// movement speed for player
 	var playerSpeed = 150;
 	var playerJumpSpeed = 150;
@@ -27,7 +28,7 @@ window.onload = function() {
 	function onPreload() {
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
-		game.load.image("player","assets/images/player.png");
+		game.load.spritesheet("player","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
 		//Load Tiled map
@@ -51,10 +52,16 @@ window.onload = function() {
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = game.add.sprite(240, 0, "player");
 		player.anchor.setTo(0.5);
-		
+		player.animations.add('walk', [2,3], 60, true);
+		player.animations.play('walk', 10, true);
+
+		playerHair = game.add.sprite(0, 0, "player");
+		playerHair.anchor.setTo(0.5);
+		playerHair.animations.add('fly', [0,1], 60, true);
+		playerHair.animations.play('fly', 10, true);
+
 		game.physics.enable(player, Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 200;
-		
 		
 		addLadder(192,0,3);
 
@@ -91,6 +98,8 @@ window.onload = function() {
 		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
 		playerOnLadder = false;
+		playerHair.x = player.x;
+		playerHair.y = player.y;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);

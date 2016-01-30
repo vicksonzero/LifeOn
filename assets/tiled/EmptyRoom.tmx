@@ -1,11 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.0" orientation="orthogonal" renderorder="right-down" width="20" height="10" tilewidth="16" tileheight="16" nextobjectid="1">
- <tileset firstgid="1" name="spriteSheet" tilewidth="16" tileheight="16" tilecount="2">
-  <image source="spriteSheet.png" width="32" height="16"/>
+ <properties>
+  <property name="collide" value="true"/>
+ </properties>
+ <tileset firstgid="1" name="spriteSheet" tilewidth="16" tileheight="16" tilecount="8">
+  <image source="spriteSheet.png" width="64" height="32"/>
  </tileset>
  <layer name="Collidable" width="20" height="10">
   <data encoding="csv">
-0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
+1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
