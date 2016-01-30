@@ -5,7 +5,7 @@
 	
 window.onload = function() {
 
-	var game = new Phaser.Game(400,400,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
 	var MAP_HEIGHT = 160;
 	var MAP_WIDTH = 320;
@@ -34,15 +34,12 @@ window.onload = function() {
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
 		//Load Tiled map
-		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
 	function onCreate() {
-		//Load the layers of tiled map as well as setting everything in the Collidable layer collidable with the player
-		var map = game.add.tilemap('gameMap');
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
 
@@ -56,7 +53,7 @@ window.onload = function() {
 		playerHair = game.add.sprite(0, 0, "player");
 		playerHair.anchor.setTo(0.5);
 		playerHair.animations.add('fly', [0,1], 60, true);
-		playerHair.animations.play('fly', 10, true);
+		playerHair.animations.add('nofly', [0], 60, true);
 
 		game.physics.enable(player, Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 200;
@@ -64,6 +61,8 @@ window.onload = function() {
 		addLadder(192,0,3);
 		addLadder(192,132,3);
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
+		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*2,'ground');
+		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*3,'ground');
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -108,7 +107,7 @@ window.onload = function() {
 		
 		
 		// keep player from falling out of world
-		if(player.y>320){
+		if(player.y>game.height){
 			player.y = 0;
 		}
 
@@ -148,6 +147,7 @@ window.onload = function() {
 	    {
 	    	playerSpeed = 0;
 			player.animations.play('stay', 10, true);
+		playerHair.animations.play('nofly', 10, true);
 	    }
 	    updateWorldBound();
 	    updateMap();
@@ -197,11 +197,13 @@ window.onload = function() {
 	function goLeft(){
 		playerSpeed = Math.abs(150)*-1;
 		player.animations.play('walk', 10, true);
+		playerHair.animations.play('fly', 10, true);
 	}
 
 	function goRight(){
 		playerSpeed = Math.abs(150);
 		player.animations.play('walk', 10, true);
+		playerHair.animations.play('fly', 10, true);
 	}
 
 	function jump(){
