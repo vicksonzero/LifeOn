@@ -64,6 +64,8 @@ window.onload = function() {
 		addLadder(192,0,3);
 		addLadder(192,132,3);
 		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
+		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*2,'ground');
+		addPlatform(MAP_WIDTH/2,MAP_HEIGHT*3,'ground');
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -108,7 +110,7 @@ window.onload = function() {
 		
 		
 		// keep player from falling out of world
-		if(player.y>320){
+		if(player.y>game.height){
 			player.y = 0;
 		}
 
