@@ -19,6 +19,7 @@ window.onload = function() {
 	var layer;
 	// holder for key binding objects
 	var keyMap = {};
+	var ladderGroup;
 
 	function onPreload() {
 		game.load.image("platform180","assets/images/platform180.png");
@@ -30,27 +31,30 @@ window.onload = function() {
 		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		
-		game.load.atlas('ladderSheet', 'assets/tiled/ladderSheet.png', 'assets/tiled/ladderSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
 	function onCreate() {
 		//Load the layers of tiled map as well as setting everything in the Collidable layer collidable with the player
 		var map = game.add.tilemap('gameMap');
+		platformGroup = game.add.group();
+		ladderGroup = game.add.group();
+		
 		map.setCollisionBetween(1, 300, true, 'Collidable');
 		map.addTilesetImage('spriteSheet', 'spriteSheet');
 		map.createLayer('Background');
 		layer = map.createLayer('Collidable');
-		
-		addLadder(0,0,3);
-
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = game.add.sprite(240, 0, "player");
 		player.anchor.setTo(0.5);
+		
 		game.physics.enable(player, Phaser.Physics.ARCADE);
 		game.physics.arcade.gravity.y = 150;
-		platformGroup = game.add.group();
 		
+		
+		addLadder(0,0,3);
+
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
    		keyMap.left.onDown.add(goLeft, this);
@@ -74,9 +78,10 @@ window.onload = function() {
 	}
 	
 	function addLadder(posX, posY, height){
+		console.log("hi");
 		const LADDER_HEIGHT = 32;
 		for(var i=0; i < height; i++){
-			new Ladder(game, "ladder", posX, posY + i * LADDER_HEIGHT);
+			new Ladder(posX, posY + i * LADDER_HEIGHT, game, player);
 		}
 	}
 
@@ -86,7 +91,9 @@ window.onload = function() {
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
-
+        game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
+		
+		
 		// keep player from falling out of world
 		if(player.y>320){
 			player.y = 0;
@@ -129,9 +136,18 @@ window.onload = function() {
 	    updateWorldBound();
 	    updateMap();
 	}
+	
+	function onContactPlayer(player, whateverCheckDoc) {
+		floatPlayer();
+		console.log("hi");
+	}
 
 	function movePlayer(){
 		player.body.velocity.x = playerSpeed;
+	}
+	
+	function floatPlayer() {
+		player.bdy.velocity.y = 0;
 	}
 
 	function changeDir(){
