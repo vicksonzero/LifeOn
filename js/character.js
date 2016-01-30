@@ -15,6 +15,7 @@ var Character = (function () {
 		group.add(this.sprite);
         
         this.sprite.go = this;
+        this.interactionTime = 1000;
         // TODO effects
     }
     
@@ -24,13 +25,33 @@ var Character = (function () {
         this.interactionCallBack = fn;
     }
 
-    p.onInteraction= function (player){
+    p.onInteraction= function (player, onFinishCallBack){
         if(this.interactionCallBack){
-            this.interactionCallBack(player)
+            this.setFlashing();
+            this.interactionCallBack()
+            setTimeout(function(){
+                if (onFinishCallBack) {
+                    onFinishCallBack();
+                }
+            }, this.interactionTime);
         };
         return (this.interactionCallBack==undefined);
     }
 
+    p.setFlashing = function () {
+        setTimeout(function() {
+            this.sprite.tint = 0xaaaaaa;
+            setTimeout(function() {
+                this.sprite.tint = 0xffffff;
+                    setTimeout(function() {
+                        this.sprite.tint = 0xaaaaaa;
+                        setTimeout(function() {
+                            this.sprite.tint = 0xffffff;
+                    }.bind(this), 333);
+                }.bind(this), 333);
+            }.bind(this), 333);
+        }.bind(this), 333);
+    }
 
     return Character;
 })();

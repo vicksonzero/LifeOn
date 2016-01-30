@@ -49,7 +49,7 @@ window.onload = function() {
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
 		game.load.image('enemy', 'assets/images/food.png');
-		game.load.image('character','assets/images/childhood_merge1spritesheet.png')
+		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
@@ -92,8 +92,15 @@ window.onload = function() {
 
 	function onInteraction(){
 		if (player.touchingCharacter) {
-			player.touchingCharacter.onInteraction();
+			player.touchingCharacter.onInteraction(
+				player,
+				function(){
+					game.input.keyboard.enabled =true;
+				}
+			);
+			game.input.keyboard.enabled=false
 		}
+
 	}
 
 	function addNewSetsOfRoom(){
@@ -155,9 +162,10 @@ window.onload = function() {
 		new Enemy(posX, posY, game, player, enemyGroup);
 	}
 
-	function addCharacter(posX, posY){
+	function addCharacter(posX, posY, time){
 		var character = new Character(posX, posY, game, player, characterGroup);
 		character.setInteractionCallBack(function(){console.log("YES")})
+		character.interactionTime = time || 1000;
 	}
 
 	function onUpdate() {
@@ -190,32 +198,36 @@ window.onload = function() {
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
-		if (cursors.up.isDown)
-	    {
-	    	moveOnLadder("up");
-	    }
-	    else if (cursors.down.isDown)
-	    {
-	    	moveOnLadder("down");
-	    }
+		if (game.input.keyboard.enabled){
+			if (cursors.up.isDown)
+		    {
+		    	moveOnLadder("up");
+		    }
+		    else if (cursors.down.isDown)
+		    {
+		    	moveOnLadder("down");
+		    }
 
-	    if (cursors.left.isDown)
-	    {
-	    	moveOnLadder("left");
-	    	movePlayer();
-	    	goLeft();
-	    }
-	    else if (cursors.right.isDown)
-	    {
-	    	moveOnLadder("right");
-	    	movePlayer();
-	    	goRight();
-	    }
-	    else
-	    {
-	    	playerSpeed = 0;
-			player.animations.play('stay', 10, true);
-	    }
+		    if (cursors.left.isDown)
+		    {
+		    	moveOnLadder("left");
+		    	movePlayer();
+		    	goLeft();
+		    }
+		    else if (cursors.right.isDown)
+		    {
+		    	moveOnLadder("right");
+		    	movePlayer();
+		    	goRight();
+		    }
+		    else
+		    {
+		    	playerSpeed = 0;
+				player.animations.play('stay', 10, true);
+		    }
+		} else {
+			playerSpeed=0;
+		}
 	    updateWorldBound();
 	    updateMap();
 	}
