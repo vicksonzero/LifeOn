@@ -16,19 +16,18 @@ window.onload = function() {
 		game.load.image("player","./img/player.png");
 		game.load.image("ground","./img/ground.png");
 		/*global Phaser*/
-		game.load.tilemap("gameMap", "./assets/tiled/level.json", null, Phaser.Tilemap.TILED_JSON);
-		game.load.image('level', 'assets/tiled/level.png');
-		game.load.image('coin', 'assets/tiled/coin.png');
+		game.load.tilemap("gameMap", "./assets/tiled/emptyRoom.json", null, Phaser.Tilemap.TILED_JSON);
+		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 	}
 
 	function onCreate() {
 		//http://phaser.io/examples/v2/loader/load-tilemap-json
 		var map = game.add.tilemap('gameMap');
 		map.addTilesetImage('level', 'level');
-		map.setCollisionBetween(1, 300, true, 'Foreground');
-		map.addTilesetImage('coin', 'coin');
+		map.setCollisionBetween(1, 300, true, 'Collidable');
+		map.addTilesetImage('spriteSheet', 'spriteSheet');
 		map.createLayer('Background');
-		layer = map.createLayer('Foreground');
+		layer = map.createLayer('Collidable');
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);

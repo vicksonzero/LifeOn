@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<map version="1.0" orientation="orthogonal" renderorder="right-down" width="5" height="10" tilewidth="16" tileheight="16" nextobjectid="1">
+ <tileset firstgid="1" name="spriteSheet" tilewidth="16" tileheight="16" tilecount="2">
+  <image source="spriteSheet.png" width="32" height="16"/>
+ </tileset>
+ <layer name="Collidable" width="5" height="10">
+  <data encoding="csv">
+0,0,2,0,0,
+0,0,2,0,0,
+0,0,2,0,0,
+0,0,2,0,0,
+0,0,2,0,0,
+0,0,2,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+1,1,0,1,1
+</data>
+ </layer>
+ <layer name="Background" width="5" height="10">
+  <data encoding="csv">
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0
+</data>
+ </layer>
+ <layer name="Ladder" width="5" height="10">
+  <data encoding="csv">
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0,
+0,0,0,0,0
+</data>
+ </layer>
+</map>
