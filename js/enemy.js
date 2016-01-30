@@ -15,25 +15,10 @@ var Enemy = (function () {
 		group.add(this.sprite);
         
         this.sprite.go = this;
-		
-        Enemy.Enemys.push(this);
         // TODO effects
     }
     
-    Enemy.Enemys = [];
-    
-    
     var p = Enemy.prototype;
 
-    p.kill = function (){
-        this.sprite.kill();
-        this.hitBox.kill();
-    }
-    
-    p.update = function (){
-        this.sprite.kill();
-        this.hitBox.kill();
-    }
-    
     return Enemy;
 })();
