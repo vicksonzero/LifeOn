@@ -20,15 +20,15 @@ var Character = (function () {
     
     var p = Character.prototype;
 
-    p.setCallBack= function (fn){
-        this.CallBack = fn;
+    p.setInteractionCallBack= function (fn){
+        this.interactionCallBack = fn;
     }
 
-    p.onCallBack= function (player){
-        if(this.CallBack){
-            this.CallBack(player)
+    p.onInteraction= function (player){
+        if(this.interactionCallBack){
+            this.interactionCallBack(player)
         };
-        return (this.CallBack==undefined);
+        return (this.interactionCallBack==undefined);
     }
 
 

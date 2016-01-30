@@ -85,14 +85,14 @@ window.onload = function() {
    		keyMap.space.onDown.add(tryJump, this);
 
    		var up_key = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
-		up_key.onDown.add(OnInteraction, this);
+		up_key.onDown.add(onInteraction, this);
 
     	game.world.setBounds(-2000, -2000, 4000, 4000);
 	}
 
-	function OnInteraction(){
+	function onInteraction(){
 		if (player.touchingCharacter) {
-			player.touchingCharacter.onCallBack();
+			player.touchingCharacter.onInteraction();
 		}
 	}
 
@@ -157,7 +157,7 @@ window.onload = function() {
 
 	function addCharacter(posX, posY){
 		var character = new Character(posX, posY, game, player, characterGroup);
-		character.setCallBack(function(){console.log("YES")})
+		character.setInteractionCallBack(function(){console.log("YES")})
 	}
 
 	function onUpdate() {
