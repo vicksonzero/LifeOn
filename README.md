@@ -8,7 +8,7 @@ Workflow:
 - Find out how to move camera (done?)
  - Find out how to move player (arrow + jump) (done?)
  - Find out camera and person interaction (done?)
- //==================================
+ - //==================================
  - Find out how to build level background
  - Find out how to build level object
  - Find out how to change level
