@@ -7,12 +7,14 @@ window.onload = function() {
 
 	var game = new Phaser.Game(400,400,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
 
+	var MAP_HEIGHT = 160;
+	var MAP_WIDTH = 320;
 	// player object
 	var player;
 	// movement speed for player
 	var playerSpeed = 150;
 	var playerJumpSpeed = 150;
-	var playerClimbSpeed = 100;
+	var playerClimbSpeed = 10;
 	var playerOnLadder = false;
 	
 	var platformGroup;
@@ -25,8 +27,6 @@ window.onload = function() {
 	var ladderGroup;
 
 	function onPreload() {
-		game.load.image("platform180","assets/images/platform180.png");
-		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("player","assets/images/player.png");
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
@@ -42,11 +42,7 @@ window.onload = function() {
 		var map = game.add.tilemap('gameMap');
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
-		
-		map.setCollisionBetween(1, 300, true, 'Collidable');
-		map.addTilesetImage('spriteSheet', 'spriteSheet');
-		map.createLayer('Background');
-		layer = map.createLayer('Collidable');
+
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
 		player = game.add.sprite(240, 0, "player");
@@ -57,6 +53,8 @@ window.onload = function() {
 		
 		
 		addLadder(192,0,3);
+		addLadder(192,132,3);
+		addPlatform(MAP_WIDTH/2,MAP_HEIGHT,'ground');
 
 		// bind keys to handlers
 		keyMap.left = game.input.keyboard.addKey(Phaser.Keyboard.LEFT);
@@ -125,11 +123,13 @@ window.onload = function() {
 
 	    if (cursors.left.isDown)
 	    {
+	    	moveOnLadder("left");
 	    	movePlayer();
 	    	goLeft();
 	    }
 	    else if (cursors.right.isDown)
 	    {
+	    	moveOnLadder("right");
 	    	movePlayer();
 	    	goRight();
 	    }
@@ -151,13 +151,24 @@ window.onload = function() {
 	}
 	
 	function moveOnLadder(direction) {
-		if(!playerOnLadder) return;
+		if(!playerOnLadder) 
+		{
+			player.body.enable=true;
+			return;
+		}
+		player.body.enable=false;
 		switch(direction){
 			case "up":
-				player.body.velocity.y = -1*playerClimbSpeed;
+				player.position.y -= playerClimbSpeed;
 				break;
 			case "down":
-				player.body.velocity.y = playerClimbSpeed;
+				player.position.y += playerClimbSpeed;
+				break;
+			case "left":
+				player.position.x -= playerClimbSpeed;
+				break;
+			case "right":
+				player.position.x += playerClimbSpeed;
 				break;
 		}
 	}
