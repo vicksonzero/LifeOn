@@ -35,6 +35,7 @@ window.onload = function() {
 	var ladderGroup;
 	var foodGroup;
 	var enemyGroup;
+	var characterGroup;
 	var roomStartGroup;
 
 	function onPreload() {
@@ -48,7 +49,7 @@ window.onload = function() {
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
 		game.load.image('enemy', 'assets/images/food.png');
-		
+		game.load.image('character','assets/images/childhood_merge1spritesheet.png')
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
 	}
 
@@ -58,6 +59,7 @@ window.onload = function() {
 		foodGroup = game.add.group();
 		roomStartGroup = game.add.group();
 		enemyGroup = game.add.group();
+		characterGroup = game.add.group();
 
 		cursors = game.input.keyboard.createCursorKeys();
 		game.physics.startSystem(Phaser.Physics.ARCADE);
@@ -66,6 +68,8 @@ window.onload = function() {
 		addFood(170,250);
 		addEnemy(170,150);
 		addEnemy(40,150);
+		addCharacter(200,150);
+		addCharacter(70,150);
 
 		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * (currentIndex.y - 1)), currentIndex.x, currentIndex.y - 1, false)
 		addRoom(currentIndex.x*MAP_WIDTH,(MAP_HEIGHT * currentIndex.y), currentIndex.x, currentIndex.y, false);
@@ -79,10 +83,17 @@ window.onload = function() {
    		keyMap.right.onDown.add(goRight, this);
 		keyMap.space = game.input.keyboard.addKey(Phaser.Keyboard.SPACEBAR);
    		keyMap.space.onDown.add(tryJump, this);
-		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
-   		keyMap.up.onDown.add(tryJump, this);
-   		
+
+   		var up_key = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+		up_key.onDown.add(OnInteraction, this);
+
     	game.world.setBounds(-2000, -2000, 4000, 4000);
+	}
+
+	function OnInteraction(){
+		if (player.touchingCharacter) {
+			player.touchingCharacter.onCallBack();
+		}
 	}
 
 	function addNewSetsOfRoom(){
@@ -144,21 +155,29 @@ window.onload = function() {
 		new Enemy(posX, posY, game, player, enemyGroup);
 	}
 
+	function addCharacter(posX, posY){
+		var character = new Character(posX, posY, game, player, characterGroup);
+		character.setCallBack(function(){console.log("YES")})
+	}
+
 	function onUpdate() {
 		player.body.allowGravity = true;
 		player.body.velocity.x = 0;
 		playerOnLadder = false;
+		player.touchingCharacter=null;
 
 		// collision
 		game.physics.arcade.collide(player, platformGroup, movePlayer);
 		game.physics.arcade.collide(player, layer, movePlayer);
 		game.physics.arcade.collide(platformGroup, foodGroup);
 		game.physics.arcade.collide(platformGroup, enemyGroup);
+		game.physics.arcade.collide(platformGroup, characterGroup);
         game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
-		
+        game.physics.arcade.overlap(player, characterGroup, onCollideCharacter, null, this);
+
 		// keep player from falling out of world
 		if(player.y>game.height){
 			player.y = 0;
@@ -229,9 +248,12 @@ window.onload = function() {
 		}
 	}
 
+	function onCollideCharacter(player, character){
+		player.touchingCharacter = character.go;
+	}
+
 	function changePlayerScore(key, val) {
 		playerScore[key] = val;
-		
 		console.log(key, playerScore[key]);
 		playerOnScoreChanged();
 	}
