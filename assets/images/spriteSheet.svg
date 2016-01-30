@@ -10,8 +10,8 @@
    xmlns:xlink="http://www.w3.org/1999/xlink"
    xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
    xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
-   width="32"
-   height="16"
+   width="64"
+   height="32"
    id="svg2"
    version="1.1"
    inkscape:version="0.48.5 r10040"
@@ -42,7 +42,7 @@
        x2="32"
        y2="32"
        gradientUnits="userSpaceOnUse"
-       gradientTransform="matrix(0.49999985,0,0,0.49999985,0,1036.3622)" />
+       gradientTransform="matrix(0.49999985,0,0,0.49999985,0,1020.3622)" />
   </defs>
   <sodipodi:namedview
      id="base"
@@ -53,7 +53,7 @@
      inkscape:pageshadow="2"
      inkscape:zoom="5.6568542"
      inkscape:cx="36.346666"
-     inkscape:cy="-4.7527274"
+     inkscape:cy="2.3183405"
      inkscape:document-units="px"
      inkscape:current-layer="layer1"
      showgrid="true"
@@ -89,24 +89,24 @@
      inkscape:label="Layer 1"
      inkscape:groupmode="layer"
      id="layer1"
-     transform="translate(0,-1036.3622)">
+     transform="translate(0,-1020.3622)">
     <rect
        style="fill:url(#linearGradient3782);fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3006"
        width="15.999995"
        height="15.999995"
        x="0"
-       y="1036.3622" />
+       y="1020.3622" />
     <rect
        style="opacity:0.5;fill:#ffffff;fill-opacity:1;fill-rule:nonzero;stroke:none"
        id="rect3787"
        width="16"
        height="5"
        x="0"
-       y="1036.3622" />
+       y="1020.3622" />
     <g
        id="g3834"
-       transform="matrix(0.45458936,0,0,0.48919016,2.2070075,537.38398)">
+       transform="matrix(0.90917899,0,0,0.97838062,-11.622056,22.405428)">
       <rect
          transform="matrix(0,1,-1,0,0,0)"
          y="-60.757954"
