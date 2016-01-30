@@ -1,8 +1,3 @@
-Workflow:
-1. create branch to make changes
-2. make pull request in github
-3. you can approve yourself (until gamejam has finished)
-
 * Move img/ into assets/
 - Find out how to move camera (done?)
  - Find out how to move player (arrow + jump) (done?)
@@ -17,6 +12,3 @@ Workflow:
  - Find out how to go up and down ladder
  - Find out how to save state and show state
  - Build github [no need! thanks to cloud9 \o/]
-Game developed for Global Game Jam 2016
-
-Prehaps we will add some content to this readme file some time later. :P
