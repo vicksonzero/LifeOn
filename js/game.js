@@ -7,7 +7,8 @@ var MAP_HEIGHT = 160;
 var MAP_WIDTH = 480;
 var LADDER_WIDTH = 36;
 var CAMERA_SIZE = 400;
-	
+var FOLLOWER_POSITION_THERSOLD = 20;;
+
 window.onload = function() {
 
 	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
@@ -21,14 +22,15 @@ window.onload = function() {
 	var playerOnLadder = false;
 	var playerScore = {
 		intellect:0,
-		health:0,
+		health:100,
 		family:0,
-		money:0
+		money:0,
+		stress:0
 	};
 	var stat = {
 		stompPeople:0,
 		rocketBook:0,
-		gameController:0
+		playGames:0
 	};
 	var trophy = {
 		"married": false,
@@ -56,6 +58,7 @@ window.onload = function() {
 	var tutorialIsRuning = true;
 	var tutorialEnemy,tutorialFood;
 	var currentTutorialState = 0;
+    var partner;
 
 	function onPreload() {
 		// bg
@@ -68,7 +71,8 @@ window.onload = function() {
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("startBox","assets/images/startBox.png");
-		game.load.spritesheet("player","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
+		game.load.spritesheet("player","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
 		/*global Phaser*/
 		//Load Tiled map
@@ -113,6 +117,24 @@ window.onload = function() {
 
 	}
 
+    function addPartner(posX, posY){
+        var partner = game.add.sprite(posX, posY, "partner");
+        partner.anchor.setTo(0.5);
+        partner.animations.add('walk', [0,1], 60, true);
+        partner.animations.add('stay', [1], 60, true);
+
+        game.physics.enable(partner, Phaser.Physics.ARCADE);
+        partner.body.setSize(32, 64, 0, 0);
+        game.physics.arcade.gravity.y = 200;
+        partner.isFollowing = true;
+        return partner
+    }
+
+    function removePartner(posX, posY){
+        partner.Destroy();
+    }
+
+
 	function onInteraction(){
 		if (player.touchingCharacter) {
 			player.touchingCharacter.onInteraction(
@@ -121,6 +143,40 @@ window.onload = function() {
 					game.input.keyboard.enabled =true;
 				}
 			);
+			switch(player.touchingCharacter.type){
+				case "schoolmateWithHeart":
+				case "crush":
+					changePlayerScore("family", 20);
+					if (!partner) addPartner(player.x,player.y);
+					break;
+				case "schoolmateWithGame":
+				case "officeManWithGame":
+					changePlayerScore("intellect", 2);
+					changePlayerScore("stress", -2);
+					changePlayerScore("family", -1);
+					stat.playGames++;
+					addPartner(player.x,player.y);
+					break;
+				case "gangsterWithDrug":
+					changePlayerScore("health", -5);
+					changePlayerScore("stress", -5);
+					changePlayerScore("family", -5);
+					break;
+				case "themePark":
+					changePlayerScore("money", -2);
+					changePlayerScore("stress", -10);
+					changePlayerScore("family", 10);
+					break;
+				case "baby":
+					if (partner){
+						changePlayerScore("family", 20);
+						changePlayerScore("stress", -10);
+					}
+					break;
+				case "doctor":
+					changePlayerScore("health",20);
+					break;
+			}
 			game.input.keyboard.enabled=false;
 		}
 
@@ -160,23 +216,37 @@ window.onload = function() {
 		return player;
 	}
 
+	function addProp(propsDef, worldX, worldY, game) {
+		console.log("prop")
+        switch(propsDef.type){
+            case "food":
+                addFood(worldX, worldY,  propsDef.name, propsDef.lifetime);
+                break;
+            case "enemy":
+                addEnemy(worldX, worldY, propsDef.name);
+                break;
+            case "character":
+                addCharacter(worldX, worldY, propsDef.name, propsDef.lifetime);
+                break;
+	    };
+    }
+    window.addProp = addProp;
 	
-	
-	function addFood(posX, posY, lifetime) {
+	function addFood(posX, posY, name, lifetime) {
 		/*global Food*/
-		var food = new Food(posX, posY, game, player, foodGroup);
+		var food = new Food(posX, posY, game, player, foodGroup, name);
 		if (lifetime){
 			food.setDuration(lifetime);
 		}
 	}
 
-	function addEnemy(posX, posY) {
-		var enemy = new Enemy(posX, posY, game, player, enemyGroup);
+	function addEnemy(posX, posY, name) {
+		var enemy = new Enemy(posX, posY, game, player, enemyGroup, name);
 		return enemy.sprite;
 	}
 
-	function addCharacter(posX, posY, time){
-		var character = new Character(posX, posY, game, player, characterGroup);
+	function addCharacter(posX, posY, name, time){
+		var character = new Character(posX, posY, game, player, characterGroup, name);
 		character.setInteractionCallBack(function(){console.log("YES")})
 		character.interactionTime = time || 1000;
 	}
@@ -193,6 +263,7 @@ window.onload = function() {
 		game.physics.arcade.collide(platformGroup, foodGroup);
 		game.physics.arcade.collide(platformGroup, enemyGroup);
 		game.physics.arcade.collide(platformGroup, characterGroup);
+		game.physics.arcade.collide(platformGroup, partner);
         game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
@@ -209,6 +280,21 @@ window.onload = function() {
 		if(player.x < 12 || player.x < game.camera.x){
 			player.x= Math.max(12,game.camera.x);
 		}
+
+        if (partner && partner.isFollowing){
+            if (Math.abs(partner.x - player.x) > FOLLOWER_POSITION_THERSOLD) {
+                partner.body.velocity.x = 150 * (partner.x > player.x? -1:1);
+                partner.scale.x=(partner.x > player.x? -1:1);
+                partner.animations.play('walk', 10, true);
+            } else {
+                partner.body.velocity.x = 0;
+                partner.animations.play('stay', 10, true);
+            }
+            if (partner.isFollowing) {
+                partner.y = player.y;
+            }
+        }
+
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
@@ -253,12 +339,16 @@ window.onload = function() {
 	
 	function onCollideFood(player, food) {
 		switch(food.go.type){
-			case "food":
-				changePlayerScore("intel", playerScore.intel + 1);
+			case "milkBottle":
+				changePlayerScore("health", 1);
 				break;
+			case "toy":
+				changePlayerScore("intellect", 2);
+				changePlayerScore("stress", -2);
+				break;
+
 		}
 		food.kill();
-		
 	}
 	
 	function onCollideStartBox(player, hit) {
@@ -268,6 +358,26 @@ window.onload = function() {
 	}
 	
 	function onCollideEnemy(player, enemy){
+		switch(enemy.go.type){
+			case "bookGeneric":
+				changePlayerScore("intellect", 10);
+				changePlayerScore("stress", 5);
+				break;
+			case "gangsterWithMoney":
+				changePlayerScore("money", 5);
+				changePlayerScore("intellect", -1);
+				break;
+			case "schoolmateWithGame":
+				changePlayerScore("intellect", 2);
+				changePlayerScore("stress", -2);
+				changePlayerScore("family", -1);
+				stat.playGames++;
+				addPartner(player.x,player.y);
+				break;
+			case "Rocket":
+				trophy.nasa=true;
+				break;
+		}
 		if (enemy.body.touching.up && player.body.touching.down) {
 			enemy.kill();
 			console.log ("killed enemy" + enemy.go.type)
@@ -279,15 +389,17 @@ window.onload = function() {
 	}
 
 	function changePlayerScore(key, val) {
-		playerScore[key] = val;
+		playerScore[key] += val;
 		
 		console.log("changePlayerScore", key, playerScore[key]);
 		playerOnScoreChanged();
 	}
 	
 	function playerOnScoreChanged() {
-		if(playerScore.intel>=2){
-			player.loadTexture('food');
+		if (playerScore.family < 10) {
+			if (partner){
+				removePartner();
+			}
 		}
 	}
 
@@ -432,9 +544,9 @@ window.onload = function() {
 				moveOnLadder("right");
 			 	return( player.position.y < MAP_HEIGHT * 0.75);
 			case 3 :
-				addCharacter(player.position.x, player.position.y-50);
+				addCharacter(player.position.x, player.position.y-50,"character");
 				player.loadTexture('partner');
-				tutorialEnemy = addEnemy(player.position.x+200, player.position.y-50);
+				tutorialEnemy = addEnemy(player.position.x+200, player.position.y-50, "bookGeneric");
 				return true;
 			case 4 :
 				player.body.velocity.x = 150;
@@ -447,7 +559,7 @@ window.onload = function() {
 			 	return( player.position.x >= tutorialEnemy.position.x);
 			case 7 :
 				player.body.velocity.x = 0;
-				addFood(player.position.x+150, player.position.y-50,4000);
+				addFood(player.position.x+150, player.position.y-50,"milkBottle",4000);
 			 	return true;
 			case 8 :
 			 	return( player.position.y > 119);
