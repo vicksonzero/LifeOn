@@ -8,23 +8,30 @@ var roomDef = {
     },
     // tutorial
     "spawnStreet1":{
-        bg:"schoolbackground",
+        bg:"street",
         props:[]
     },
     "home1":{
-        bg:"schoolbackground",
+        bg:"home",
         props:[
             {name:"bookGeneric", type:"enemy", x:240, y:100}
         ]
     },
     "spawnStreet2":{
-        bg:"schoolbackground",
+        bg:"street",
         props:[]
     },
     "home2":{
-        bg:"schoolbackground",
+        bg:"home",
         props:[
             {name:"milkBottle", type:"food", x:240, y:100}
+        ]
+    },
+    "home3":{
+        bg:"home",
+        props:[
+            {name:"milkBottle", type:"food", x:240, y:100},
+            {name:"bookGeneric", type:"food", x:140, y:100}
         ]
     },
     // teen
@@ -39,7 +46,7 @@ var roomDef = {
         ]
     },
     "street":{
-        bg:"schoolbackground",
+        bg:"street",
         props:[
             {name:"schoolmateWithHeart", type:"character", x:240, y:100},
             {name:"schoolmateWithGame", type:"character", x:240, y:100},
@@ -70,7 +77,7 @@ var roomDef = {
         ]
     },
     "hospital":{
-        bg:"schoolbackground",
+        bg:"hospital",
         props:[
             {name:"crush", type:"character", x:240, y:100},
             {name:"schoolmateWithGame", type:"character", x:240, y:100},
@@ -80,7 +87,7 @@ var roomDef = {
         ]
     },
     "nasa":{
-        bg:"schoolbackground",
+        bg:"nasa",
         props:[
             {name:"crush", type:"character", x:240, y:100},
             {name:"schoolmateWithGame", type:"character", x:240, y:100},
@@ -89,18 +96,22 @@ var roomDef = {
             {name:"themePark", type:"character", x:240, y:100}
         ]
     },
-
+    "park":{
+        bg:"park",
+        props:[
+        ]
+    },
 
 
 
     "home2":{
-        bg:"schoolbackground",
+        bg:"home",
         props:[
             {name:"milkBottle", type:"food", x:240, y:100}
         ]
     },
     "houseWithWife":{
-        bg:"schoolbackground",
+        bg:"home",
         props:[
             {name:"baby", type:"character", x:240, y:100},
             {name:"wife", type:"character", x:240, y:100},
@@ -108,7 +119,7 @@ var roomDef = {
         ]
     },
     "houseWithoutWife":{
-        bg:"schoolbackground",
+        bg:"home",
         props:[
             {name:"gameController", type:"food", x:240, y:100}
         ]

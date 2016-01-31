@@ -29,6 +29,7 @@ window.onload = function() {
 	};
 	var stat = {
 		stompPeople:0,
+		age:"child",		// child teen adult middle elderly
 		rocketBook:0,
 		playGames:0
 	};
@@ -63,6 +64,14 @@ window.onload = function() {
 	function onPreload() {
 		// bg
 		game.load.image("schoolbackground","assets/bg/schoolbackground.png");
+		game.load.image("home","assets/bg/home.png");
+		game.load.image("street","assets/bg/street.png");
+		game.load.image("office","assets/bg/office.png");
+		game.load.image("casino","assets/bg/casino.png");
+		game.load.image("arcade","assets/bg/arcade.png");
+		game.load.image("nasa","assets/bg/nasa.png");
+		game.load.image("hospital","assets/bg/hospital.png");
+		game.load.image("park","assets/bg/park.png");
 		
 		
 		
@@ -199,10 +208,13 @@ window.onload = function() {
 			// create one room if only one
 			/*global Room*/
 			/*global roomDef*/
-			Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
+			if(roomSet[0].name !== "empty"){
+				Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
+			}
 		}else{
 			// 0 = up, 1 = keep level, 2 (optional)= down
 			for(var i=0; i < roomSet.length; i++){
+				if(roomSet[i].name == "empty") continue;
 				Room.create({x:currentIndex.x, y:currentIndex.y - 1 + i}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[i].name], (i+1 < roomSet.length));
 			}
 			
@@ -359,6 +371,7 @@ window.onload = function() {
 	
 	function onCollideStartBox(player, hit) {
 		currentIndex.y = hit.roomY;
+		updateStat();
 		updateMap();
 		hit.destroy();
 	}
@@ -479,6 +492,31 @@ window.onload = function() {
 	function updateWorldBound() {
     	game.world.setBounds(player.x - 2000, player.y - 2000, 4000, 4000);
 	}
+
+
+	function updateStat () {
+		var state = getStateObject();
+		if(state.stat.age == "child"){
+			if(state.currentIndex.x==5){
+				state.stat.age = "teen";
+			}
+		}
+		if(state.stat.age == "teen"){
+			if(state.currentIndex.x==10){
+				state.stat.age = "adult";
+			}
+		}
+		if(state.stat.age == "adult"){
+			if(state.currentIndex.x==15){
+				state.stat.age = "middle";
+			}
+		}
+		if(state.stat.age == "middle"){
+			if(state.currentIndex.x==20){
+				state.stat.age = "elderly";
+			}
+		}
+	}
 	
 	function updateMap() {
 		var roomSet = generateNextRoomSet();
@@ -486,8 +524,104 @@ window.onload = function() {
 		addNewSetsOfRoom(roomSet);
 		
 	}
+
+	function generateNextRoomSet () {
+		var state = getStateObject();
+		var result = [
+			roomDef.empty,
+			roomDef.empty
+		];
+		var noofRooms = 3;
+		// tutorial
+		if(state.stat.age == "child" ){
+			if(state.currentIndex.x==0){
+				result[0] = roomDef.empty;
+				result[1] = roomDef.spawnStreet1;
+				noofRooms = 2;
+			}else if(state.currentIndex.x==1){
+				result[0] = roomDef.home1;
+				result[1] = roomDef.spawnStreet2;
+				noofRooms = 2;
+
+			}else if(state.currentIndex.x==2){
+				result[0] = roomDef.home2;
+				result[1] = roomDef.spawnStreet1;
+				noofRooms = 2;
+			}else{
+				result[0] = roomDef.home3;
+				result.length = 1;
+			}
+
+
+
+
+		}else if(state.stat.age == "teen"){
+			result[0] = roomDef.school;
+			result[1] = roomDef.street;
+
+
+
+
+
+		}else if(state.stat.age == "adult"){
+			result[0] = roomDef.office;
+			result[1] = roomDef.street;
+
+			// provide choice for buy house
+			if(state.playerScore.money==100){
+				result[2] = roomDef.buyHouse;
+			}
+
+			//nasa
+			if(state.stat.pickedRocketBook>0){
+				result[1] = roomDef.nasa;
+			}
+
+
+
+
+
+		}else if(state.stat.age == "middle"){
+			result[0] = roomDef.office;
+			//bought house
+			if(state.trophy.house){
+				result[1] = roomDef.house;	// house with, without wife and kids
+			}else{
+				result[1] = roomDef.street;
+			}
+			if(state.trophy.house && state.playerScore.family<20){
+				result[1] = roomDef.house;	// house without wife and kids
+			}
+
+
+
+		}else if(state.stat.age == "elderly"){
+			result[1] = roomDef.park;
+			var tmp = [];
+			if(state.trophy.house){
+				tmp.push(roomDef.house);	// house with, without wife and kids
+			}
+			if(state.playerScore.health<20){
+				tmp.push(roomDef.hospital);
+			}
+			result[0] = tmp[game.rnd.integerInRange(0,tmp.length-1)];
+
+
+
+
+		}else{
+			// do nothing? no. TODO do something
+		}
+
+
+
+
+
+
+		return result;
+	}
 	
-	function generateNextRoomSet() {
+	function XgenerateNextRoomSet() {
 		var result = [];
 		var choices = game.rnd.integerInRange(2,3);
 
@@ -500,7 +634,6 @@ window.onload = function() {
 			if(rule.condition(state) == true){
 				// force result
 
-				console.log(rule.mustHaveRooms);
 				result = result.concat(rule.mustHaveRooms.map(function(elem){
 					/*global roomDef*/
 					return roomDef[elem.roomName];
@@ -521,16 +654,14 @@ window.onload = function() {
 
 
 		return result;
-
-		
-		
 	}
 
 	function getStateObject(){
 		return {
 			currentIndex: currentIndex,
 			playerScore: playerScore,
-			stat: stat
+			stat: stat,
+			trophy: trophy
 		};
 	}
 
