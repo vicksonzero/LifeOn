@@ -88,11 +88,26 @@ window.onload = function() {
 		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
 		game.load.image("bookGeneric","assets/images/props/book.png");
+		game.load.image("book","assets/images/props/bookMath.png");
+		game.load.image("gameController","assets/images/ps3 controller.png");
+
+		game.load.image("schoolmateWithHeart","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("rocketBook","assets/images/props/bookScience.png");
+		game.load.image("themePark","assets/images/rocket.png");
+
+		game.load.image("wife","assets/images/Female Young adult_wedding_merge -Sprite sheet.png"); //TODO
+
+		game.load.image("crush","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png");
+		game.load.image("gangsterWithDrug","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
+		game.load.image("gangsterWithMoney","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
 
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
+		game.load.image('milkBottle', 'assets/images/Milk-Bottle-icon.png');
+
 		game.load.image('enemy', 'assets/images/food.png');
 		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
