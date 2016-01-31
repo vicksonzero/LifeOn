@@ -17,8 +17,11 @@
 			position: absolute;
 			color: white;
 			background-color: black;
-			top:380px;
+			top:410px;
 			left:470px;
+		}
+		audio{
+			visibility: hidden;
 		}
 	</style>
 	<script src="lib/phaser.min.js"></script>
@@ -33,6 +36,9 @@
     	<script src="js/game.js"></script>
 	</head>
 	<body>
-	<div id="title"><img src="assets/images/titleScreen.png"><button id="startBtn" onclick = "startGame()"><img src="assets/images/startButton.png"></button></div>
+	<div id="title">
+ <audio autoplay="" controls="" loop="" preload="">
+ <source src="assets/sound/BGM/MoonlightSonata.mp3" type="audio/ogg"></source>
+</audio><img src="assets/images/titleScreen.png"><button id="startBtn" onclick = "startGame()"><img src="assets/images/startButton.png"></button></div>
 	</body>
 </html>
