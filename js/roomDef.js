@@ -35,7 +35,24 @@ var roomDef = {
         ]
     },
     // teen
-    "school":{
+    "school1":{
+        bg:"schoolbackground",
+        props:[
+            {name:"book", type:"enemy", x:240, y:100},
+            {name:"schoolmateWithGame", type:"character", x:240, y:100},
+            {name:"book", type:"enemy", x:240, y:100},
+        ]
+    },
+    "school2":{
+        bg:"schoolbackground",
+        props:[
+            {name:"schoolmateWithGame", type:"character", x:240, y:100},
+            {name:"book", type:"enemy", x:240, y:100},
+            {name:"rocketBook", type:"enemy", x:240, y:100},
+            {name:"themePark", type:"character", x:240, y:100}
+        ]
+    },
+    "school3":{
         bg:"schoolbackground",
         props:[
             {name:"schoolmateWithHeart", type:"character", x:240, y:60},
@@ -122,6 +139,18 @@ var roomDef = {
         bg:"home",
         props:[
             {name:"gameController", type:"food", x:240, y:60}
+        ]
+    },
+    "graveGood":{
+        bg:"home",
+        props:[
+            {name:"tombGood", type:"food", x:240, y:100}
+        ]
+    },
+    "graveBad":{
+        bg:"home",
+        props:[
+            {name:"tombBad", type:"food", x:240, y:100}
         ]
     }
 
