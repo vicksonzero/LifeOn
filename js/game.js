@@ -11,7 +11,13 @@ var FOLLOWER_POSITION_THERSOLD = 20;;
 
 window.onload = function() {
 
-	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+	var game;
+	function startGame() {
+		game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+		var element = document.getElementById("title");
+		element.parentNode.removeChild(element);
+	}
+	window.startGame = startGame;
 
 	// player object
 	var player;
@@ -62,6 +68,10 @@ window.onload = function() {
 	var currentTutorialState = 0;
     var partner;
 
+	var birthMusic;
+	var overWorldMusic;
+	var deathMusic;
+
 	function onPreload() {
 		// bg
 		game.load.image("schoolbackground","assets/bg/schoolbackground.png");
@@ -93,20 +103,44 @@ window.onload = function() {
 		game.load.image("ground","assets/images/ground.png");
 		game.load.image("bookGeneric","assets/images/props/book.png");
 		game.load.image("baby","assets/images/props/baby.png");
+		game.load.image("book","assets/images/props/bookMath.png");
+		game.load.image("gameController","assets/images/ps3 controller.png");
+
+		game.load.image("schoolmateWithHeart","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("rocketBook","assets/images/props/bookScience.png");
+		game.load.image("themePark","assets/images/rocket.png");
+
+		game.load.image("wife","assets/images/Female Young adult_wedding_merge -Sprite sheet.png"); //TODO
+
+		game.load.image("crush","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png");
+		game.load.image("gangsterWithDrug","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
+		game.load.image("gangsterWithMoney","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
 
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
+		game.load.image('milkBottle', 'assets/images/Milk-Bottle-icon.png');
+
 		game.load.image('enemy', 'assets/images/food.png');
 		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
     	game.load.audio('bookFlippingSound', 'assets/sound/SFX/bookflipping.ogg');
     	game.load.audio('coinGetSound', 'assets/sound/SFX/coin-get.ogg');
     	game.load.audio('rocketLaunchSound', 'assets/sound/SFX/rocketlaunch.ogg');
+
+		game.load.audio('birthMusic', 'assets/sound/BGM/birthmusic.ogg');
+		game.load.audio('overWorldMusic', 'assets/sound/BGM/overworld.ogg');
+		game.load.audio('deathMusic', 'assets/sound/BGM/deathmusic.ogg');
 	}
 
 	function onCreate() {
+		birthMusic = game.add.audio('birthMusic');
+		overWorldMusic = game.add.audio('overWorldMusic');
+		deathMusic = game.add.audio('deathMusic');
+		birthMusic.loopFull(1.0);
+
 		bgGroup = game.add.group();
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
@@ -715,7 +749,6 @@ window.onload = function() {
 	}
 
 	function render() {
-	    game.debug.cameraInfo(game.camera, 32, 32);
 
 	}
 
@@ -760,6 +793,8 @@ window.onload = function() {
 		}
 		tutorialIsRuning = false;
 		game.input.keyboard.enabled=true;
+		birthMusic.stop();
+		overWorldMusic.loopFull(1.0);
 	}
 
 };
