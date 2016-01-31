@@ -33,23 +33,6 @@ var directorRules = [
             {roomName:"home1", weight:1}
         ]
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     {
         name:"house stay for 2 rounds",
         condition: function(state){

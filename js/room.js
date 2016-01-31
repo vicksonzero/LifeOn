@@ -52,7 +52,7 @@ var Room = (function () {
         var worldY;
         for(var i=0; i < roomDef.props.length; i++){
             /*global Props*/
-            worldX = roomX + 480*(i+0.5)/roomDef.props.length;
+            worldX = roomX + (480 - 2* LADDER_WIDTH*1.2) *(i+0.5)/roomDef.props.length + LADDER_WIDTH*1.2;
             worldY = roomY + roomDef.props[i].y;
             addProp(roomDef.props[i], worldX, worldY, game);
         }
