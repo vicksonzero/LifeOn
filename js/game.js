@@ -96,7 +96,16 @@ window.onload = function() {
 		game.load.spritesheet("player_adult","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
 		game.load.spritesheet("player_middle","assets/images/Middle age - merge - Sprite Sheet.png", 64, 64, 4);
 		game.load.spritesheet("player_elderly","assets/images/Elders - merge - Sprite sheet.png", 64, 64, 4);
+
 		game.load.spritesheet("player_parentsbaby","assets/images/Parent - Merge - Sprite sheet.png", 64, 64, 4);
+
+		game.load.spritesheet("partner_child","assets/images/childhood_merge1spritesheet.png", 64, 64, 4);
+		game.load.spritesheet("partner_teen","assets/images/Female student_merge -sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("partner_adult","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
+		game.load.spritesheet("partner_middle","assets/images/Middle age - merge sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("partner_elderly","assets/images/Elders - merge_sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("partner_wedding","assets/images/Female Young adult_wedding_merge -Sprite sheet.png", 64, 64, 4);
+
 
 		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
@@ -239,6 +248,7 @@ window.onload = function() {
 				case "church":
 					console.log("church")
 					addFood(player.position.x, player.position.y-100,  "diamondRing");
+					partner.loadTexture("partner_wedding");
 					break;
 			}
 			game.input.keyboard.enabled=false;
@@ -473,18 +483,33 @@ window.onload = function() {
 		switch(newAge){
 			case "child":
 				player.loadTexture('player_child');
+				if(partner){
+					partner.loadTexture('partner_child');
+				}
 				break;
 			case "teen":
 				player.loadTexture('player_teen');
+				if(partner){
+					partner.loadTexture('partner_teen');
+				}
 				break;
 			case "adult":
 				player.loadTexture('player_adult');
+				if(partner){
+					partner.loadTexture('partner_adult');
+				}
 				break;
 			case "middle":
 				player.loadTexture('player_middle');
+				if(partner){
+					partner.loadTexture('partner_middle');
+				}
 				break;
 			case "elderly":
 				player.loadTexture('player_elderly');
+				if(partner){
+					partner.loadTexture('partner_elderly');
+				}
 				break;
 		}
 	}
