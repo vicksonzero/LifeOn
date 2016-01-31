@@ -21,14 +21,16 @@ window.onload = function() {
 	var playerOnLadder = false;
 	var playerScore = {
 		intellect:0,
-		health:0,
+		health:100,
 		family:0,
-		money:0
+		money:0,
+		stress:0
 	};
 	var stat = {
 		stompPeople:0,
-		rocketBook:0,
-		gameController:0
+		pickedRocketBook:0,
+		playGames:0,
+		age:"child",		// child teen adult middle elderly
 	};
 	var trophy = {
 		"married": false,
@@ -132,10 +134,13 @@ window.onload = function() {
 			// create one room if only one
 			/*global Room*/
 			/*global roomDef*/
-			Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
+			if(roomSet[i].name !== "empty"){
+				Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
+			}
 		}else{
 			// 0 = up, 1 = keep level, 2 (optional)= down
 			for(var i=0; i < roomSet.length; i++){
+				if(roomSet[i].name == "empty") continue;
 				Room.create({x:currentIndex.x, y:currentIndex.y - 1 + i}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[i].name], (i+1 < roomSet.length));
 			}
 			
@@ -272,6 +277,7 @@ window.onload = function() {
 	
 	function onCollideStartBox(player, hit) {
 		currentIndex.y = hit.roomY;
+		updateStat();
 		updateMap();
 		hit.destroy();
 	}
@@ -364,6 +370,31 @@ window.onload = function() {
 	function updateWorldBound() {
     	game.world.setBounds(player.x - 2000, player.y - 2000, 4000, 4000);
 	}
+
+
+	function updateStat () {
+		var state = getStateObject();
+		if(state.stat.age == "child"){
+			if(state.currentIndex.x==2){
+				state.stat.age = "teen";
+			}
+		}
+		if(state.stat.age == "teen"){
+			if(state.currentIndex.x==2){
+				state.stat.age = "adult";
+			}
+		}
+		if(state.stat.age == "child"){
+			if(state.currentIndex.x==2){
+				state.stat.age = "teen";
+			}
+		}
+		if(state.stat.age == "child"){
+			if(state.currentIndex.x==2){
+				state.stat.age = "teen";
+			}
+		}
+	}
 	
 	function updateMap() {
 		var roomSet = generateNextRoomSet();
@@ -371,8 +402,101 @@ window.onload = function() {
 		addNewSetsOfRoom(roomSet);
 		
 	}
+
+	function generateNextRoomSet () {
+		var state = getStateObject();
+		var result = [
+			roomDef.empty,
+			roomDef.empty
+		];
+		var noofRooms = 3;
+		// tutorial
+		if(state.stat.age == "child" ){
+			if(state.currentIndex.x==0){
+				result[0] = roomDef.empty;
+				result[1] = roomDef.spawnStreet1;
+				noofRooms = 2;
+			}else if(state.currentIndex.x==1){
+				result[0] = roomDef.home1;
+				result[1] = roomDef.spawnStreet2;
+				noofRooms = 2;
+
+			}else if(state.currentIndex.x==2){
+				result[0] = roomDef.home2;
+				result[1] = roomDef.spawnStreet1;
+				noofRooms = 2;
+			}
+
+
+
+
+		}else if(state.stat.age == "teen"){
+			result[0] = roomDef.school;
+			result[1] = roomDef.street;
+
+
+
+
+
+		}else if(state.stat.age == "adult"){
+			result[0] = roomDef.office;
+			result[1] = roomDef.street;
+
+			// provide choice for buy house
+			if(state.playerScore.money==100){
+				result[2] = roomDef.buyHouse;
+			}
+
+			//nasa
+			if(state.stat.pickedRocketBook>0){
+				result[1] = roomDef.nasa;
+			}
+
+
+
+
+
+		}else if(state.stat.age == "middle"){
+			result[0] = roomDef.office;
+			//bought house
+			if(state.trophy.house){
+				result[1] = roomDef.house;	// house with, without wife and kids
+			}else{
+				result[1] = roomDef.street;
+			}
+			if(state.trophy.house && state.playerScore.family<20){
+				result[1] = roomDef.house;	// house without wife and kids
+			}
+
+
+
+		}else if(state.stat.age == "elderly"){
+			result[1] = roomDef.park;
+			var tmp = [];
+			if(state.trophy.house){
+				tmp.push(roomDef.house);	// house with, without wife and kids
+			}
+			if(state.playerScore.health<20){
+				tmp.push(roomDef.hospital);
+			}
+			result[0] = tmp[game.rnd.integerInRange(0,tmp.length-1)];
+
+
+
+
+		}else{
+			// do nothing? no. TODO do something
+		}
+
+
+
+
+
+
+		return result;
+	}
 	
-	function generateNextRoomSet() {
+	function XgenerateNextRoomSet() {
 		var result = [];
 		var choices = game.rnd.integerInRange(2,3);
 
@@ -385,7 +509,6 @@ window.onload = function() {
 			if(rule.condition(state) == true){
 				// force result
 
-				console.log(rule.mustHaveRooms);
 				result = result.concat(rule.mustHaveRooms.map(function(elem){
 					/*global roomDef*/
 					return roomDef[elem.roomName];
@@ -406,9 +529,6 @@ window.onload = function() {
 
 
 		return result;
-
-		
-		
 	}
 
 	function getStateObject(){

@@ -33,23 +33,6 @@ var directorRules = [
             {roomName:"home1", weight:1}
         ]
     },
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
     {
         name:"house stay for 2 rounds",
         condition: function(state){
@@ -63,7 +46,6 @@ var directorRules = [
     {
         name:"house small with wife",
         condition: function(state){
-            interactive item called 地產
             return false;
         },
         maxRooms:1,
