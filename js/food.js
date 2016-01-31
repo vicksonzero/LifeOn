@@ -2,8 +2,8 @@
 /* global Phaser*/
 /* global player*/
 var Food = (function () {
-    function Food(startX, startY, game, player, group){
-        this.sprite = game.add.sprite(startX, startY, "food");
+    function Food(startX, startY, game, player, group, name){
+        this.sprite = game.add.sprite(startX, startY, name);
         
 		game.physics.enable(this.sprite, Phaser.Physics.ARCADE);
 		
@@ -11,15 +11,12 @@ var Food = (function () {
 		this.sprite.body.allowGravity = true;
 		group.add(this.sprite);
         
-        this.type = "food";
+        this.type =name;
         this.sprite.go = this;
 		
         
         // TODO effects
     }
-    
-    Food.create
-    
     var p = Food.prototype;
 
     p.setDuration= function(lifeTime){

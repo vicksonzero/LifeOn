@@ -7,7 +7,8 @@ var MAP_HEIGHT = 160;
 var MAP_WIDTH = 480;
 var LADDER_WIDTH = 36;
 var CAMERA_SIZE = 400;
-	
+var FOLLOWER_POSITION_THERSOLD = 20;;
+
 window.onload = function() {
 
 	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
@@ -28,9 +29,9 @@ window.onload = function() {
 	};
 	var stat = {
 		stompPeople:0,
-		pickedRocketBook:0,
-		playGames:0,
 		age:"child",		// child teen adult middle elderly
+		rocketBook:0,
+		playGames:0
 	};
 	var trophy = {
 		"married": false,
@@ -55,6 +56,10 @@ window.onload = function() {
 	var characterGroup;
 	var roomStartGroup;
 	var bgGroup;
+	var tutorialIsRuning = true;
+	var tutorialEnemy,tutorialFood;
+	var currentTutorialState = 0;
+    var partner;
 
 	function onPreload() {
 		// bg
@@ -67,8 +72,11 @@ window.onload = function() {
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("startBox","assets/images/startBox.png");
-		game.load.spritesheet("player","assets/images/FemaleWalkCycleYoungAdulthoodSpriteSheet.png", 64, 64, 4);
+		game.load.spritesheet("player","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
+		game.load.image("bookGeneric","assets/images/props/book.png");
+
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
@@ -76,6 +84,9 @@ window.onload = function() {
 		game.load.image('enemy', 'assets/images/food.png');
 		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+    	game.load.audio('bookFlippingSound', 'assets/sound/SFX/bookflipping.ogg');
+    	game.load.audio('coinGetSound', 'assets/sound/SFX/coin-get.ogg');
+    	game.load.audio('rocketLaunchSound', 'assets/sound/SFX/rocketlaunch.ogg');
 	}
 
 	function onCreate() {
@@ -107,10 +118,29 @@ window.onload = function() {
    		keyMap.space.onDown.add(tryJump, this);
 
 
-   		keyMap.up = this.game.input.keyboard.addKey(Phaser.Keyboard.UP);
+   		keyMap.up = game.input.keyboard.addKey(Phaser.Keyboard.UP);
 		keyMap.up.onDown.add(onInteraction, this);
 
 	}
+
+    function addPartner(posX, posY){
+        var partner = game.add.sprite(posX, posY, "partner");
+        partner.anchor.setTo(0.5);
+        partner.animations.add('walk', [0,1], 60, true);
+        partner.animations.add('stay', [1], 60, true);
+
+        game.physics.enable(partner, Phaser.Physics.ARCADE);
+        partner.body.setSize(32, 64, 0, 0);
+        game.physics.arcade.gravity.y = 200;
+        partner.isFollowing = true;
+        characterGroup.add(partner);
+        return partner
+    }
+
+    function removePartner(posX, posY){
+        partner.destroy();
+    }
+
 
 	function onInteraction(){
 		if (player.touchingCharacter) {
@@ -120,6 +150,42 @@ window.onload = function() {
 					game.input.keyboard.enabled =true;
 				}
 			);
+			switch(player.touchingCharacter.type){
+				case "schoolmateWithHeart":
+				case "crush":
+					changePlayerScore("family", 20);
+					if (!partner) {
+						partner = addPartner(player.x,player.y-100);
+						player.touchingCharacter.sprite.destroy();
+					}
+					break;
+				case "schoolmateWithGame":
+				case "officeManWithGame":
+					changePlayerScore("intellect", 2);
+					changePlayerScore("stress", -2);
+					changePlayerScore("family", -1);
+					stat.playGames++;
+					break;
+				case "gangsterWithDrug":
+					changePlayerScore("health", -5);
+					changePlayerScore("stress", -5);
+					changePlayerScore("family", -5);
+					break;
+				case "themePark":
+					changePlayerScore("money", -2);
+					changePlayerScore("stress", -10);
+					changePlayerScore("family", 10);
+					break;
+				case "baby":
+					if (partner){
+						changePlayerScore("family", 20);
+						changePlayerScore("stress", -10);
+					}
+					break;
+				case "doctor":
+					changePlayerScore("health",20);
+					break;
+			}
 			game.input.keyboard.enabled=false;
 		}
 
@@ -147,20 +213,6 @@ window.onload = function() {
 		}
 		currentIndex.x++;
 	}
-
-	function addRoom(x,y,roomX, roomY, ladder){
-		if (ladder) {
-			addLadder(x,y+150,3);
-		}
-		addPlatform(x+MAP_WIDTH/2,y+MAP_HEIGHT,'ground');
-        var startBox = game.add.sprite(x + LADDER_WIDTH * 1.1 + CAMERA_SIZE*1.1/2, y, "startBox", 1);
-		game.physics.enable(startBox, Phaser.Physics.ARCADE);
-		startBox.body.immovable = true;
-		startBox.body.allowGravity = false;
-		startBox.roomX=roomX;
-		startBox.roomY=roomY;
-		roomStartGroup.add(startBox);
-	}
 	
 	function addPlayer(posX, posY) {
 		
@@ -176,22 +228,36 @@ window.onload = function() {
 		return player;
 	}
 
+	function addProp(propsDef, worldX, worldY, game) {
+        switch(propsDef.type){
+            case "food":
+                addFood(worldX, worldY,  propsDef.name, propsDef.lifetime);
+                break;
+            case "enemy":
+                addEnemy(worldX, worldY, propsDef.name);
+                break;
+            case "character":
+                addCharacter(worldX, worldY, propsDef.name, propsDef.lifetime);
+                break;
+	    };
+    }
+    window.addProp = addProp;
 	
-	
-	function addFood(posX, posY, lifetime) {
+	function addFood(posX, posY, name, lifetime) {
 		/*global Food*/
-		var food = new Food(posX, posY, game, player, foodGroup);
+		var food = new Food(posX, posY, game, player, foodGroup, name);
 		if (lifetime){
 			food.setDuration(lifetime);
 		}
 	}
 
-	function addEnemy(posX, posY) {
-		new Enemy(posX, posY, game, player, enemyGroup);
+	function addEnemy(posX, posY, name) {
+		var enemy = new Enemy(posX, posY, game, player, enemyGroup, name);
+		return enemy.sprite;
 	}
 
-	function addCharacter(posX, posY, time){
-		var character = new Character(posX, posY, game, player, characterGroup);
+	function addCharacter(posX, posY, name, time){
+		var character = new Character(posX, posY, game, player, characterGroup, name);
 		character.setInteractionCallBack(function(){console.log("YES")})
 		character.interactionTime = time || 1000;
 	}
@@ -208,21 +274,37 @@ window.onload = function() {
 		game.physics.arcade.collide(platformGroup, foodGroup);
 		game.physics.arcade.collide(platformGroup, enemyGroup);
 		game.physics.arcade.collide(platformGroup, characterGroup);
-        game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
+		game.physics.arcade.collide(platformGroup, partner);
+        game.physics.arcade.overlap(player, enemyGroup, onCollideEnemy, null, this);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
         game.physics.arcade.overlap(player, characterGroup, onCollideCharacter, null, this);
 
-		// keep player from falling out of world
-		if(player.y>game.height){
-			player.y = 0;
-		}
+        if (tutorialIsRuning) {
+        	if (runTutorial(currentTutorialState)){
+        		currentTutorialState++;
+        	}
+        }
 
 		// keep player from going before camera
 		if(player.x < 12 || player.x < game.camera.x){
 			player.x= Math.max(12,game.camera.x);
 		}
+        if (partner && partner.isFollowing){
+            if (Math.abs(partner.x - player.x) > FOLLOWER_POSITION_THERSOLD) {
+                partner.body.velocity.x = 150 * (partner.x > player.x? -1:1);
+                partner.scale.x=(partner.x > player.x? -1:1);
+                partner.animations.play('walk', 10, true);
+            } else {
+                partner.body.velocity.x = 0;
+                partner.animations.play('stay', 10, true);
+            }
+            if (partner.isFollowing) {
+                partner.y = player.y;
+            }
+        }
+
 		game.camera.x = Math.max(player.x-CAMERA_SIZE/2,oldCameraX);
 		oldCameraX = game.camera.x;
 		game.camera.y = player.y-CAMERA_SIZE/2;
@@ -267,12 +349,16 @@ window.onload = function() {
 	
 	function onCollideFood(player, food) {
 		switch(food.go.type){
-			case "food":
-				changePlayerScore("intel", playerScore.intel + 1);
+			case "milkBottle":
+				changePlayerScore("health", 1);
 				break;
+			case "toy":
+				changePlayerScore("intellect", 2);
+				changePlayerScore("stress", -2);
+				break;
+
 		}
 		food.kill();
-		
 	}
 	
 	function onCollideStartBox(player, hit) {
@@ -284,6 +370,32 @@ window.onload = function() {
 	
 	function onCollideEnemy(player, enemy){
 		if (enemy.body.touching.up && player.body.touching.down) {
+			switch(enemy.go.type){
+				case "bookGeneric":
+					changePlayerScore("intellect", 10);
+					changePlayerScore("stress", 5);
+					var SF = game.add.audio('bookFlippingSound');
+	   				SF.play();
+					break;
+				case "gangsterWithMoney":
+					changePlayerScore("money", 5);
+					changePlayerScore("intellect", -1);
+					var SF = game.add.audio('coinGetSound');
+	   				SF.play();
+					break;
+				case "schoolmateWithGame":
+					changePlayerScore("intellect", 2);
+					changePlayerScore("stress", -2);
+					changePlayerScore("family", -1);
+					stat.playGames++;
+					partner = addPartner(player.x,player.y);
+					break;
+				case "Rocket":
+					trophy.nasa=true;
+					var SF = game.add.audio('rocketLaunchSound');
+	   				SF.play();
+					break;
+			}
 			enemy.kill();
 			console.log ("killed enemy" + enemy.go.type)
 		}
@@ -294,15 +406,17 @@ window.onload = function() {
 	}
 
 	function changePlayerScore(key, val) {
-		playerScore[key] = val;
+		playerScore[key] += val;
 		
 		console.log("changePlayerScore", key, playerScore[key]);
 		playerOnScoreChanged();
 	}
 	
 	function playerOnScoreChanged() {
-		if(playerScore.intel>=2){
-			player.loadTexture('food');
+		if (playerScore.family < 10) {
+			if (partner){
+				removePartner();
+			}
 		}
 	}
 
@@ -548,8 +662,50 @@ window.onload = function() {
 
 	}
 
-};
+	function runTutorial(state){
+		game.input.keyboard.enabled=false;
+		switch (state) {
+			case 0 :
+				player.body.velocity.x = 150;
+				player.animations.play('walk', 10, true);
+			 	return( player.position.x > MAP_WIDTH + LADDER_WIDTH/2);
+			case 1 :
+				moveOnLadder("up");
+			 	return( player.position.y < MAP_HEIGHT * 0.7);
+			case 2 :
+				moveOnLadder("right");
+			 	return( player.position.y < MAP_HEIGHT * 0.75);
+			case 3 :
+				addCharacter(player.position.x, player.position.y-50,"character");
+				player.loadTexture('partner');
+				tutorialEnemy = addEnemy(player.position.x+200, player.position.y-50, "bookGeneric");
+				return true;
+			case 4 :
+				player.body.velocity.x = 150;
+			 	return( player.position.x >=  tutorialEnemy.position.x-20);
+			case 5 :
+				player.body.velocity.y = -150;
+				player.animations.play('stay', 10, true);
+			 	return( player.position.y < MAP_HEIGHT*0.75);
+			case 6 :
+				player.body.velocity.x = 150;
+				player.animations.play('walk', 10, true);
+			 	return( player.position.x >= tutorialEnemy.position.x);
+			case 7 :
+				player.body.velocity.x = 0;
+				addFood(player.position.x+150, player.position.y-50,"milkBottle",4000);
+			 	return true;
+			case 8 :
+			 	return( player.position.y > 119);
+			case 9 :
+				player.body.velocity.x = 150;
+				return (player.position.x > MAP_WIDTH*2.5)
+		}
+		tutorialIsRuning = false;
+		game.input.keyboard.enabled=true;
+	}
 
+};
 
 
 /*

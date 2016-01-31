@@ -11,7 +11,7 @@ var Props = (function () {
         // nothing
     }
     
-    Props.create = function create(propsDef, worldX, worldY) {
+    Props.create = function create(propsDef, worldX, worldY, game) {
         var result = null;
         switch(propsDef.type){
             case "food":

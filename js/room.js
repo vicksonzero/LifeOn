@@ -52,9 +52,9 @@ var Room = (function () {
         var worldY;
         for(var i=0; i < roomDef.props.length; i++){
             /*global Props*/
-            worldX = roomX + roomDef.props[i].x;
+            worldX = roomX + 480*(i+0.5)/roomDef.props.length;
             worldY = roomY + roomDef.props[i].y;
-            result.addProp(Props.create(roomDef.props[i], worldX, worldY));
+            addProp(roomDef.props[i], worldX, worldY, game);
         }
         result.roomName = roomDef.roomName;
         return result;
@@ -90,9 +90,6 @@ var Room = (function () {
     
     
     var p = Room.prototype;
-    p.addProp = function addProp(prop) {
-        //this.propList.add(prop);
-    }
     
     
     
