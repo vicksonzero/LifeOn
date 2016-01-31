@@ -147,7 +147,7 @@ window.onload = function() {
 				case "schoolmateWithHeart":
 				case "crush":
 					changePlayerScore("family", 20);
-					if (!parent) addPartner(player.x,player.y);
+					if (!partner) addPartner(player.x,player.y);
 					break;
 				case "schoolmateWithGame":
 				case "officeManWithGame":
