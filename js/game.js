@@ -64,6 +64,14 @@ window.onload = function() {
 	function onPreload() {
 		// bg
 		game.load.image("schoolbackground","assets/bg/schoolbackground.png");
+		game.load.image("home","assets/bg/home.png");
+		game.load.image("street","assets/bg/street.png");
+		game.load.image("office","assets/bg/office.png");
+		game.load.image("casino","assets/bg/casino.png");
+		game.load.image("arcade","assets/bg/arcade.png");
+		game.load.image("nasa","assets/bg/nasa.png");
+		game.load.image("hospital","assets/bg/hospital.png");
+		game.load.image("park","assets/bg/park.png");
 		
 		
 		
@@ -200,7 +208,7 @@ window.onload = function() {
 			// create one room if only one
 			/*global Room*/
 			/*global roomDef*/
-			if(roomSet[i].name !== "empty"){
+			if(roomSet[0].name !== "empty"){
 				Room.create({x:currentIndex.x, y:currentIndex.y}, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef[roomSet[0].name], false);
 			}
 		}else{
@@ -489,23 +497,23 @@ window.onload = function() {
 	function updateStat () {
 		var state = getStateObject();
 		if(state.stat.age == "child"){
-			if(state.currentIndex.x==2){
+			if(state.currentIndex.x==5){
 				state.stat.age = "teen";
 			}
 		}
 		if(state.stat.age == "teen"){
-			if(state.currentIndex.x==2){
+			if(state.currentIndex.x==10){
 				state.stat.age = "adult";
 			}
 		}
-		if(state.stat.age == "child"){
-			if(state.currentIndex.x==2){
-				state.stat.age = "teen";
+		if(state.stat.age == "adult"){
+			if(state.currentIndex.x==15){
+				state.stat.age = "middle";
 			}
 		}
-		if(state.stat.age == "child"){
-			if(state.currentIndex.x==2){
-				state.stat.age = "teen";
+		if(state.stat.age == "middle"){
+			if(state.currentIndex.x==20){
+				state.stat.age = "elderly";
 			}
 		}
 	}
@@ -539,6 +547,9 @@ window.onload = function() {
 				result[0] = roomDef.home2;
 				result[1] = roomDef.spawnStreet1;
 				noofRooms = 2;
+			}else{
+				result[0] = roomDef.home3;
+				result.length = 1;
 			}
 
 
@@ -649,7 +660,8 @@ window.onload = function() {
 		return {
 			currentIndex: currentIndex,
 			playerScore: playerScore,
-			stat: stat
+			stat: stat,
+			trophy: trophy
 		};
 	}
 
