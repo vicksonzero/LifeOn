@@ -83,6 +83,9 @@ window.onload = function() {
 		game.load.image('enemy', 'assets/images/food.png');
 		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
+    	game.load.audio('bookFlippingSound', 'assets/sound/SFX/bookflipping.ogg');
+    	game.load.audio('coinGetSound', 'assets/sound/SFX/coin-get.ogg');
+    	game.load.audio('rocketLaunchSound', 'assets/sound/SFX/rocketlaunch.ogg');
 	}
 
 	function onCreate() {
@@ -360,27 +363,33 @@ window.onload = function() {
 	}
 	
 	function onCollideEnemy(player, enemy){
-		switch(enemy.go.type){
-			case "bookGeneric":
-				changePlayerScore("intellect", 10);
-				changePlayerScore("stress", 5);
-				break;
-			case "gangsterWithMoney":
-				changePlayerScore("money", 5);
-				changePlayerScore("intellect", -1);
-				break;
-			case "schoolmateWithGame":
-				changePlayerScore("intellect", 2);
-				changePlayerScore("stress", -2);
-				changePlayerScore("family", -1);
-				stat.playGames++;
-				addPartner(player.x,player.y);
-				break;
-			case "Rocket":
-				trophy.nasa=true;
-				break;
-		}
 		if (enemy.body.touching.up && player.body.touching.down) {
+			switch(enemy.go.type){
+				case "bookGeneric":
+					changePlayerScore("intellect", 10);
+					changePlayerScore("stress", 5);
+					var SF = game.add.audio('bookFlippingSound');
+	   				SF.play();
+					break;
+				case "gangsterWithMoney":
+					changePlayerScore("money", 5);
+					changePlayerScore("intellect", -1);
+					var SF = game.add.audio('coinGetSound');
+	   				SF.play();
+					break;
+				case "schoolmateWithGame":
+					changePlayerScore("intellect", 2);
+					changePlayerScore("stress", -2);
+					changePlayerScore("family", -1);
+					stat.playGames++;
+					addPartner(player.x,player.y);
+					break;
+				case "Rocket":
+					trophy.nasa=true;
+					var SF = game.add.audio('rocketLaunchSound');
+	   				SF.play();
+					break;
+			}
 			enemy.kill();
 			console.log ("killed enemy" + enemy.go.type)
 		}
