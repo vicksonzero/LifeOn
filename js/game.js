@@ -132,11 +132,12 @@ window.onload = function() {
         partner.body.setSize(32, 64, 0, 0);
         game.physics.arcade.gravity.y = 200;
         partner.isFollowing = true;
+        characterGroup.add(partner);
         return partner
     }
 
     function removePartner(posX, posY){
-        partner.Destroy();
+        partner.destroy();
     }
 
 
@@ -152,7 +153,10 @@ window.onload = function() {
 				case "schoolmateWithHeart":
 				case "crush":
 					changePlayerScore("family", 20);
-					if (!partner) addPartner(player.x,player.y);
+					if (!partner) {
+						partner = addPartner(player.x,player.y-100);
+						player.touchingCharacter.sprite.destroy();
+					}
 					break;
 				case "schoolmateWithGame":
 				case "officeManWithGame":
@@ -160,7 +164,6 @@ window.onload = function() {
 					changePlayerScore("stress", -2);
 					changePlayerScore("family", -1);
 					stat.playGames++;
-					addPartner(player.x,player.y);
 					break;
 				case "gangsterWithDrug":
 					changePlayerScore("health", -5);
@@ -222,7 +225,6 @@ window.onload = function() {
 	}
 
 	function addProp(propsDef, worldX, worldY, game) {
-		console.log("prop")
         switch(propsDef.type){
             case "food":
                 addFood(worldX, worldY,  propsDef.name, propsDef.lifetime);
@@ -285,7 +287,6 @@ window.onload = function() {
 		if(player.x < 12 || player.x < game.camera.x){
 			player.x= Math.max(12,game.camera.x);
 		}
-
         if (partner && partner.isFollowing){
             if (Math.abs(partner.x - player.x) > FOLLOWER_POSITION_THERSOLD) {
                 partner.body.velocity.x = 150 * (partner.x > player.x? -1:1);
@@ -382,7 +383,7 @@ window.onload = function() {
 					changePlayerScore("stress", -2);
 					changePlayerScore("family", -1);
 					stat.playGames++;
-					addPartner(player.x,player.y);
+					partner = addPartner(player.x,player.y);
 					break;
 				case "Rocket":
 					trophy.nasa=true;
@@ -547,6 +548,7 @@ window.onload = function() {
 		switch (state) {
 			case 0 :
 				player.body.velocity.x = 150;
+				player.animations.play('walk', 10, true);
 			 	return( player.position.x > MAP_WIDTH + LADDER_WIDTH/2);
 			case 1 :
 				moveOnLadder("up");
@@ -564,9 +566,11 @@ window.onload = function() {
 			 	return( player.position.x >=  tutorialEnemy.position.x-20);
 			case 5 :
 				player.body.velocity.y = -150;
+				player.animations.play('stay', 10, true);
 			 	return( player.position.y < MAP_HEIGHT*0.75);
 			case 6 :
 				player.body.velocity.x = 150;
+				player.animations.play('walk', 10, true);
 			 	return( player.position.x >= tutorialEnemy.position.x);
 			case 7 :
 				player.body.velocity.x = 0;
