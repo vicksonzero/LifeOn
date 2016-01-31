@@ -386,12 +386,14 @@ window.onload = function() {
 		    if (cursors.left.isDown)
 		    {
 		    	moveOnLadder("left");
+                player.scale.x=(-1);
 		    	movePlayer();
 		    	goLeft();
 		    }
 		    else if (cursors.right.isDown)
 		    {
 		    	moveOnLadder("right");
+                player.scale.x=(1);
 		    	movePlayer();
 		    	goRight();
 		    }
