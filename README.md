@@ -1,3 +1,6 @@
+# What's Life
+
+
 Workflow:
 
 1. create branch to make changes
@@ -22,3 +25,15 @@ Workflow:
 Game developed for Global Game Jam 2016
 
 Prehaps we will add some content to this readme file some time later. :P
+
+
+## Credit
+
+1. Bobbo Liu
+1. Crona
+1. Dickson Chui
+1. Elton Yu
+1. Firmino Da Silva Khan
+1. Henry Lau
+1. William Chong
+1. Wong Cho Ching
