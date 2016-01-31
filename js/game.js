@@ -92,6 +92,8 @@ window.onload = function() {
 		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("startBox","assets/images/startBox.png");
 
+		game.load.image("diamondRing","assets/images/diamondring.png");
+
 		game.load.spritesheet("player_child","assets/images/childhood_merge - Sprite sheet.png", 64, 64, 4);
 		game.load.spritesheet("player_teen","assets/images/MEN_student - Merge - sprite sheet.png", 64, 64, 4);
 		game.load.spritesheet("player_adult","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
@@ -110,6 +112,7 @@ window.onload = function() {
 		game.load.image("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
 		game.load.image("rocketBook","assets/images/props/bookScience.png");
 		game.load.image("themePark","assets/images/rocket.png");
+		game.load.image("church","assets/images/church-icon.png");
 
 		game.load.image("wife","assets/images/Female Young adult_wedding_merge -Sprite sheet.png"); //TODO
 
@@ -235,6 +238,10 @@ window.onload = function() {
 					break;
 				case "doctor":
 					changePlayerScore("health",20);
+					break;
+				case "church":
+					console.log("church")
+					addFood(player.position.x, player.position.y-100,  "diamondRing");
 					break;
 			}
 			game.input.keyboard.enabled=false;
@@ -560,6 +567,7 @@ window.onload = function() {
 
 
 	function updateStat () {
+		console.log(currentIndex.x);
 		var state = getStateObject();
 		if(state.stat.age == "child"){
 			if(state.currentIndex.x==5){
@@ -640,6 +648,10 @@ window.onload = function() {
 			// provide choice for buy house
 			if(state.playerScore.money==100){
 				result[2] = roomDef.buyHouse;
+			}
+
+			if(state.currentIndex.x==12){
+				result[2] = roomDef.church;
 			}
 
 			//nasa

@@ -49,7 +49,6 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:100},
             {name:"book", type:"enemy", x:240, y:100},
             {name:"rocketBook", type:"enemy", x:240, y:100},
-            {name:"themePark", type:"character", x:240, y:100}
         ]
     },
     "school3":{
@@ -59,7 +58,6 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:60},
             {name:"book", type:"enemy", x:240, y:60},
             {name:"rocketBook", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
         ]
     },
     "street":{
@@ -69,7 +67,6 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:60},
             {name:"gangsterWithDrug", type:"character", x:240, y:60},  // with drugs
             {name:"gangsterWithMoney", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
         ]
     },
     //adult
@@ -80,17 +77,6 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:60},
             {name:"gangsterWithDrug", type:"character", x:240, y:60},  // with drugs
             {name:"gangsterWithMoney", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
-        ]
-    },
-    "office":{
-        bg:"office",
-        props:[
-            {name:"crush", type:"character", x:240, y:60},
-            {name:"schoolmateWithGame", type:"character", x:240, y:60},
-            {name:"gangsterWithDrug", type:"character", x:240, y:60},  // with drugs
-            {name:"gangsterWithMoney", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
         ]
     },
     "hospital":{
@@ -100,7 +86,12 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:60},
             {name:"gangsterWithDrug", type:"character", x:240, y:60},  // with drugs
             {name:"gangsterWithMoney", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
+        ]
+    },
+    "church":{
+        bg:"park",
+        props:[
+            {name:"church", type:"character", x:240, y:20},
         ]
     },
     "nasa":{
@@ -110,7 +101,6 @@ var roomDef = {
             {name:"schoolmateWithGame", type:"character", x:240, y:60},
             {name:"gangsterWithDrug", type:"character", x:240, y:60},  // with drugs
             {name:"gangsterWithMoney", type:"enemy", x:240, y:60},
-            {name:"themePark", type:"character", x:240, y:60}
         ]
     },
     "park":{
