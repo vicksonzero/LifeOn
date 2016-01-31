@@ -83,10 +83,7 @@ window.onload = function() {
 		game.load.image("nasa","assets/bg/nasa.png");
 		game.load.image("hospital","assets/bg/hospital.png");
 		game.load.image("park","assets/bg/park.png");
-		
-		
-		
-		
+
 		// sprites
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
@@ -106,8 +103,8 @@ window.onload = function() {
 		game.load.image("book","assets/images/props/bookMath.png");
 		game.load.image("gameController","assets/images/ps3 controller.png");
 
-		game.load.image("schoolmateWithHeart","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
-		game.load.image("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.spritesheet("schoolmateWithHeart","assets/images/Female student_merge -sprite sheet.png",64,64,2); //TODO
+		game.load.spritesheet("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png",64,64,2); //TODO
 		game.load.image("rocketBook","assets/images/props/bookScience.png");
 		game.load.image("themePark","assets/images/rocket.png");
 
