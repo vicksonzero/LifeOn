@@ -6,6 +6,22 @@
 			background: #000000;
 			padding:0px;
 			margin:0px;
+			height:960px;
+			width: 960px;
+		}
+		#title{
+			height:960px;
+			width:960px;
+		}
+		#startBtn{
+			position: absolute;
+			color: white;
+			background-color: black;
+			top:410px;
+			left:470px;
+		}
+		audio{
+			visibility: hidden;
 		}
 	</style>
 	<script src="lib/phaser.min.js"></script>
@@ -16,10 +32,13 @@
     	<script src="js/enemy.js"></script>
     	<script src="js/food.js"></script>
     	<script src="js/props.js"></script>
-    	
     	<script src="js/ladder.js"></script>
     	<script src="js/game.js"></script>
 	</head>
 	<body>
+	<div id="title">
+ <audio autoplay="" controls="" loop="" preload="">
+ <source src="assets/sound/BGM/MoonlightSonata.mp3" type="audio/ogg"></source>
+</audio><img src="assets/images/titleScreen.png"><button id="startBtn" onclick = "startGame()"><img src="assets/images/startButton.png"></button></div>
 	</body>
 </html>

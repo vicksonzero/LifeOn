@@ -11,7 +11,13 @@ var FOLLOWER_POSITION_THERSOLD = 20;;
 
 window.onload = function() {
 
-	var game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+	var game;
+	function startGame() {
+		game = new Phaser.Game(960,600,Phaser.CANVAS,"",{preload:onPreload, create:onCreate, update:onUpdate, render: render});
+		var element = document.getElementById("title");
+		element.parentNode.removeChild(element);
+	}
+	window.startGame = startGame;
 
 	// player object
 	var player;
@@ -61,6 +67,10 @@ window.onload = function() {
 	var currentTutorialState = 0;
     var partner;
 
+	var birthMusic;
+	var overWorldMusic;
+	var deathMusic;
+
 	function onPreload() {
 		// bg
 		game.load.image("schoolbackground","assets/bg/schoolbackground.png");
@@ -95,9 +105,18 @@ window.onload = function() {
     	game.load.audio('bookFlippingSound', 'assets/sound/SFX/bookflipping.ogg');
     	game.load.audio('coinGetSound', 'assets/sound/SFX/coin-get.ogg');
     	game.load.audio('rocketLaunchSound', 'assets/sound/SFX/rocketlaunch.ogg');
+
+		game.load.audio('birthMusic', 'assets/sound/BGM/birthmusic.ogg');
+		game.load.audio('overWorldMusic', 'assets/sound/BGM/overworld.ogg');
+		game.load.audio('deathMusic', 'assets/sound/BGM/deathmusic.ogg');
 	}
 
 	function onCreate() {
+		birthMusic = game.add.audio('birthMusic');
+		overWorldMusic = game.add.audio('overWorldMusic');
+		deathMusic = game.add.audio('deathMusic');
+		birthMusic.loopFull(1.0);
+
 		bgGroup = game.add.group();
 		platformGroup = game.add.group();
 		ladderGroup = game.add.group();
@@ -670,7 +689,6 @@ window.onload = function() {
 	}
 
 	function render() {
-	    game.debug.cameraInfo(game.camera, 32, 32);
 
 	}
 
@@ -715,6 +733,8 @@ window.onload = function() {
 		}
 		tutorialIsRuning = false;
 		game.input.keyboard.enabled=true;
+		birthMusic.stop();
+		overWorldMusic.loopFull(1.0);
 	}
 
 };
