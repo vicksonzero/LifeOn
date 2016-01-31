@@ -63,7 +63,6 @@ var directorRules = [
     {
         name:"house small with wife",
         condition: function(state){
-            interactive item called 地產
             return false;
         },
         maxRooms:1,

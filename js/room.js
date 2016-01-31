@@ -54,7 +54,7 @@ var Room = (function () {
             /*global Props*/
             worldX = roomX + roomDef.props[i].x;
             worldY = roomY + roomDef.props[i].y;
-            result.addProp(Props.create(roomDef.props[i], worldX, worldY));
+            addProp(roomDef.props[i], worldX, worldY, game);
         }
         result.roomName = roomDef.roomName;
         return result;
@@ -90,9 +90,6 @@ var Room = (function () {
     
     
     var p = Room.prototype;
-    p.addProp = function addProp(prop) {
-        //this.propList.add(prop);
-    }
     
     
     
