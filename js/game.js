@@ -20,8 +20,22 @@ window.onload = function() {
 	var playerClimbSpeed = 10;
 	var playerOnLadder = false;
 	var playerScore = {
-		intel:0
+		intellect:0,
+		health:0,
+		family:0,
+		money:0
 	};
+	var stat = {
+		stompPeople:0,
+		rocketBook:0,
+		gameController:0
+	};
+	var trophy = {
+		"married": false,
+		"house": false,
+		"travel": false,
+		"nasa": false,
+	}
 	var currentIndex = {
 		x:0,
 		y:2
@@ -104,7 +118,7 @@ window.onload = function() {
 					game.input.keyboard.enabled =true;
 				}
 			);
-			game.input.keyboard.enabled=false
+			game.input.keyboard.enabled=false;
 		}
 
 	}
@@ -126,6 +140,7 @@ window.onload = function() {
 			}
 			
 		}
+		currentIndex.x++;
 	}
 
 	function addRoom(x,y,roomX, roomY, ladder){
@@ -258,7 +273,7 @@ window.onload = function() {
 	function onCollideStartBox(player, hit) {
 		currentIndex.y = hit.roomY;
 		updateMap();
-		hit.kill();
+		hit.destroy();
 	}
 	
 	function onCollideEnemy(player, enemy){
@@ -400,6 +415,7 @@ window.onload = function() {
 		return {
 			currentIndex: currentIndex,
 			playerScore: playerScore,
+			stat: stat
 		};
 	}
 
