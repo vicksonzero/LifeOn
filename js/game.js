@@ -74,6 +74,8 @@ window.onload = function() {
 		game.load.spritesheet("player","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
 		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
+		game.load.image("bookGeneric","assets/images/props/book.png");
+
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
@@ -264,7 +266,7 @@ window.onload = function() {
 		game.physics.arcade.collide(platformGroup, enemyGroup);
 		game.physics.arcade.collide(platformGroup, characterGroup);
 		game.physics.arcade.collide(platformGroup, partner);
-        game.physics.arcade.collide(player, enemyGroup, onCollideEnemy);
+        game.physics.arcade.overlap(player, enemyGroup, onCollideEnemy, null, this);
         game.physics.arcade.overlap(player, ladderGroup, onContactPlayer, null, this);
         game.physics.arcade.overlap(player, foodGroup, onCollideFood, null, this);
         game.physics.arcade.overlap(player, roomStartGroup, onCollideStartBox, null, this);
