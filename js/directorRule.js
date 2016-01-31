@@ -33,8 +33,70 @@ var directorRules = [
             {roomName:"home1", weight:1}
         ]
     },
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    
+    {
+        name:"house stay for 2 rounds",
+        condition: function(state){
+            return state.stat.seenHouse==1;
+        },
+        maxRooms:2,
+        mustHaveRooms:[
+            {roomName:"house", weight:1},
+        ]
+    },
+    {
+        name:"house small with wife",
+        condition: function(state){
+            interactive item called 地產
+            return false;
+        },
+        maxRooms:1,
+        mustHaveRooms:[
+            {roomName:"empty", weight:1},
+            {roomName:"empty", weight:1},
+            {roomName:"empty", weight:1},
+        ]
+    },
+    {
+        name:"house big with wife",
+        condition: function(state){
+            return false;
+        },
+        maxRooms:1,
+        mustHaveRooms:[
+            {roomName:"house", weight:1},
+        ]
+    },
     {
         name:"others",
+        condition: function(state){
+            return false;
+        },
+        maxRooms:1,
+        mustHaveRooms:[
+            {roomName:"empty", weight:1},
+            {roomName:"empty", weight:1},
+            {roomName:"empty", weight:1},
+        ]
+    },
+    {
+        name:"church marriage",
         condition: function(state){
             return false;
         },

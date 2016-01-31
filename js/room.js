@@ -45,7 +45,7 @@ var Room = (function () {
         //roomdef = {bg props name}
         var roomX = Room.indexToCoordX(currentIndex);
         var roomY = Room.indexToCoordY(currentIndex);
-        
+        console.log("HI 1");
         var result = new Room(currentIndex, game, player, bgGroup, platformGroup, roomStartGroup, ladderGroup, roomDef.bg, needLadder);
         
         var worldX
