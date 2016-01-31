@@ -22,7 +22,8 @@ window.onload = function() {
 	// player object
 	var player;
 	// movement speed for player
-	var playerSpeed = 150;
+	var playerSpeed = 5000;
+	// var playerSpeed = 150;
 	var playerJumpSpeed = 150;
 	var playerClimbSpeed = 10;
 	var playerOnLadder = false;
@@ -90,15 +91,38 @@ window.onload = function() {
 		game.load.image("platform180","assets/images/platform180.png");
 		game.load.image("platform120","assets/images/platform120.png");
 		game.load.image("startBox","assets/images/startBox.png");
-		game.load.spritesheet("player","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
+
+		game.load.spritesheet("player_child","assets/images/childhood_merge - Sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("player_teen","assets/images/MEN_student - Merge - sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("player_adult","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("player_middle","assets/images/Middle age - merge - Sprite Sheet.png", 64, 64, 4);
+		game.load.spritesheet("player_elderly","assets/images/Elders - merge - Sprite sheet.png", 64, 64, 4);
+		game.load.spritesheet("player_parentsbaby","assets/images/Parent - Merge - Sprite sheet.png", 64, 64, 4);
+
 		game.load.spritesheet("partner","assets/images/FemaleWalkCycleYoungAdulthoodmerge.png", 64, 64, 4);
 		game.load.image("ground","assets/images/ground.png");
 		game.load.image("bookGeneric","assets/images/props/book.png");
+		game.load.image("baby","assets/images/props/baby.png");
+		game.load.image("book","assets/images/props/bookMath.png");
+		game.load.image("gameController","assets/images/ps3 controller.png");
+
+		game.load.image("schoolmateWithHeart","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("schoolmateWithGame","assets/images/MEN_student - Merge - sprite sheet.png"); //TODO
+		game.load.image("rocketBook","assets/images/props/bookScience.png");
+		game.load.image("themePark","assets/images/rocket.png");
+
+		game.load.image("wife","assets/images/Female Young adult_wedding_merge -Sprite sheet.png"); //TODO
+
+		game.load.image("crush","assets/images/MEN_YoungAdulthood - Merge -sprite sheet.png");
+		game.load.image("gangsterWithDrug","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
+		game.load.image("gangsterWithMoney","assets/images/Stranger1 man- merge - sprite sheet.png"); //TODO
 
 		/*global Phaser*/
 		//Load Tiled map
 		game.load.image('spriteSheet', 'assets/tiled/spriteSheet.png');
 		game.load.image('food', 'assets/images/food.png');
+		game.load.image('milkBottle', 'assets/images/Milk-Bottle-icon.png');
+
 		game.load.image('enemy', 'assets/images/food.png');
 		game.load.spritesheet('character','assets/images/childhood_merge1spritesheet.png',64,64,2)
 		game.load.atlas('ladderSheet', 'assets/tiled/spriteSheet.png', 'assets/tiled/spriteSheet.json', Phaser.Loader.TEXTURE_ATLAS_JSON_HASH);
@@ -243,7 +267,7 @@ window.onload = function() {
 	
 	function addPlayer(posX, posY) {
 		
-		var player = game.add.sprite(posX, posY, "player");
+		var player = game.add.sprite(posX, posY, "player_parentsbaby");
 		player.anchor.setTo(0.5);
 		player.animations.add('walk', [0,1], 60, true);
 		player.animations.add('stay', [1], 60, true);
@@ -438,6 +462,28 @@ window.onload = function() {
 		console.log("changePlayerScore", key, playerScore[key]);
 		playerOnScoreChanged();
 	}
+
+	function changeAge(newAge){
+
+		stat.age = newAge;
+		switch(newAge){
+			case "child":
+				player.loadTexture('player_child');
+				break;
+			case "teen":
+				player.loadTexture('player_teen');
+				break;
+			case "adult":
+				player.loadTexture('player_adult');
+				break;
+			case "middle":
+				player.loadTexture('player_middle');
+				break;
+			case "elderly":
+				player.loadTexture('player_elderly');
+				break;
+		}
+	}
 	
 	function playerOnScoreChanged() {
 		if (playerScore.family < 10) {
@@ -517,22 +563,26 @@ window.onload = function() {
 		var state = getStateObject();
 		if(state.stat.age == "child"){
 			if(state.currentIndex.x==5){
-				state.stat.age = "teen";
+				changeAge("teen");
+				console.log(state.stat.age);
 			}
 		}
 		if(state.stat.age == "teen"){
 			if(state.currentIndex.x==10){
-				state.stat.age = "adult";
+				changeAge("adult");
+				console.log(state.stat.age);
 			}
 		}
 		if(state.stat.age == "adult"){
 			if(state.currentIndex.x==15){
-				state.stat.age = "middle";
+				changeAge("middle");
+				console.log(state.stat.age);
 			}
 		}
 		if(state.stat.age == "middle"){
 			if(state.currentIndex.x==20){
-				state.stat.age = "elderly";
+				changeAge("elderly");
+				console.log(state.stat.age);
 			}
 		}
 	}
@@ -563,9 +613,10 @@ window.onload = function() {
 				noofRooms = 2;
 
 			}else if(state.currentIndex.x==2){
-				result[0] = roomDef.home2;
-				result[1] = roomDef.spawnStreet1;
-				noofRooms = 2;
+				result[0] = roomDef.empty;
+				result[1] = roomDef.home2;
+				result[2] = roomDef.spawnStreet2;
+				noofRooms = 3;
 			}else{
 				result[0] = roomDef.home3;
 				result.length = 1;
@@ -575,7 +626,7 @@ window.onload = function() {
 
 
 		}else if(state.stat.age == "teen"){
-			result[0] = roomDef.school;
+			result[0] = [roomDef.school1, roomDef.school2,roomDef.school3][Math.floor(Math.random()*3)];;
 			result[1] = roomDef.street;
 
 
@@ -604,12 +655,12 @@ window.onload = function() {
 			result[0] = roomDef.office;
 			//bought house
 			if(state.trophy.house){
-				result[1] = roomDef.house;	// house with, without wife and kids
+				result[1] = roomDef.houseWithWife;	// house with, without wife and kids
 			}else{
 				result[1] = roomDef.street;
 			}
 			if(state.trophy.house && state.playerScore.family<20){
-				result[1] = roomDef.house;	// house without wife and kids
+				result[1] = roomDef.houseWithWife;	// house without wife and kids
 			}
 
 
@@ -618,10 +669,13 @@ window.onload = function() {
 			result[1] = roomDef.park;
 			var tmp = [];
 			if(state.trophy.house){
-				tmp.push(roomDef.house);	// house with, without wife and kids
+				tmp.push(roomDef.houseWithWife);	// house with, without wife and kids
 			}
 			if(state.playerScore.health<20){
 				tmp.push(roomDef.hospital);
+			}
+			if(! state.trophy.house && !(state.playerScore.health<20) ){
+				tmp.push(roomDef.empty);
 			}
 			result[0] = tmp[game.rnd.integerInRange(0,tmp.length-1)];
 
@@ -629,7 +683,13 @@ window.onload = function() {
 
 
 		}else{
-			// do nothing? no. TODO do something
+		}
+		// do nothing? no. TODO do something
+		if(state.currentIndex.x==15){
+			result = [roomDef.graveGood];
+		}
+		if(state.playerScore.health<=0){
+			result = [roomDef.graveBad];
 		}
 
 
@@ -706,8 +766,8 @@ window.onload = function() {
 				moveOnLadder("right");
 			 	return( player.position.y < MAP_HEIGHT * 0.75);
 			case 3 :
-				addCharacter(player.position.x, player.position.y-50,"character");
-				player.loadTexture('partner');
+				addCharacter(player.position.x, player.position.y-50,"partner");
+				changeAge("child");
 				tutorialEnemy = addEnemy(player.position.x+200, player.position.y-50, "bookGeneric");
 				return true;
 			case 4 :
